@@ -7,7 +7,7 @@ and window layout, plus character builds you can load onto any character on any 
 
 **Requires:** LibAddonMenu-2.0 (version 43 or newer).
 
-Everything starts off. Nothing changes on any account until you turn it on there.
+Everything starts turned off. Nothing changes on any account until you turn it on there.
 
 ## How it works
 
@@ -33,8 +33,8 @@ main it undoes the copy, so this addon copies nothing there while it is active a
 - The game's Settings pages: Gameplay, Camera, Interface, Nameplates, Social, Combat and Accessibility. Each page can be turned off.
 - Keybinds, including addon keybinds. An addon's keybind is copied once that addon is turned on for the account.
 - Chat colors, chat text size and how far the chat window fades.
-- **Addon settings** (starts off): the main's settings for every addon on this addon's list that is turned on for the account, such as options, colors and window positions. An addon's stats, logs and collected data stay as each account has them, and addons that only hold data (inventories, knowledge, guild history and the like) are never touched.
-- **Chat window, meters and quest tracker** (starts off): where the base game's chat window, frame rate and ping meters and quest tracker sit, taken from the character the snapshot was made on.
+- **Addon settings** (starts turned off): the main's settings for every addon on this addon's list that is turned on for the account, such as options, colors and window positions. An addon's stats, logs and collected data stay as each account has them, and addons that only hold data (inventories, knowledge, guild history and the like) are never touched.
+- **Chat window, meters and quest tracker** (starts turned off): where the base game's chat window, frame rate and ping meters and quest tracker sit, taken from the character the snapshot was made on.
 
 Graphics and sound aren't copied because every account on the same PC already shares them.
 

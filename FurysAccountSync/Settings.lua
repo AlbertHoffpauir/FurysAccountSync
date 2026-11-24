@@ -26,7 +26,7 @@ function AS.InitSettings()
     local controls = {
         { type = "description",
           text = "Make your other accounts on this PC match your main one. Every account on the same PC shares this addon's " ..
-                 "saved file, so the main takes a snapshot and the others copy it. Everything here starts off." },
+                 "saved file, so the main takes a snapshot and the others copy it. Everything here starts turned off." },
         { type = "description",
           text = function()
               if AS.OtherSyncActive() then
@@ -98,13 +98,13 @@ function AS.InitSettings()
     }
     controls[#controls + 1] = {
         type = "checkbox", name = "Addon settings",
-        tooltip = "The settings of the addons on this addon's list that are turned on for this account: options, colors, window positions. Their stats, logs and collected data stay as this account has them, and addons that only hold data are never touched. Ends with a UI reload. Starts off.",
+        tooltip = "The settings of the addons on this addon's list that are turned on for this account: options, colors, window positions. Their stats, logs and collected data stay as this account has them, and addons that only hold data are never touched. Ends with a UI reload. Starts turned off.",
         getFunc = function() return sv.what.addons end,
         setFunc = function(v) sv.what.addons = v; AS.RefreshWindow() end,
     }
     controls[#controls + 1] = {
         type = "checkbox", name = "Chat window, meters and quest tracker",
-        tooltip = "Where the base game's chat window, frame rate and ping meters and quest tracker sit, taken from the character the snapshot was made on. Ends with a UI reload. Starts off.",
+        tooltip = "Where the base game's chat window, frame rate and ping meters and quest tracker sit, taken from the character the snapshot was made on. Ends with a UI reload. Starts turned off.",
         getFunc = function() return sv.what.layout end,
         setFunc = function(v) sv.what.layout = v; AS.RefreshWindow() end,
     }

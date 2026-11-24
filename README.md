@@ -2,11 +2,11 @@
 
 **AI disclosure:** This addon's code was written with the assistance of an AI coding assistant (Claude by Anthropic), working from my designs and instructions. I test every release in game on my own accounts before it goes up, and I maintain it. Please report any problem in the comments on ESOUI or in the issues here.
 
-An Elder Scrolls Online addon for people who play more than one account on the same PC. Set up your main account the way you like it, and your other accounts copy it: game settings, keybinds, chat look, addon settings and window positions, plus character builds you can load onto any character on any account. Everything starts off, and nothing changes on an account until you turn it on there.
+An Elder Scrolls Online addon for people who play more than one account on the same PC. Set up your main account the way you like it, and your other accounts copy it: game settings, keybinds, chat look, addon settings and window positions, plus character builds you can load onto any character on any account. Everything starts turned off, and nothing changes on an account until you turn it on there.
 
 ## Downloads
 
-- **The addon:** get it from [ESOUI](https://www.esoui.com/downloads/info5106-FurysAccountSync.html) or Minion. The same files are in [`FurysAccountSync/`](FurysAccountSync/) here, and as [FurysAccountSync-0.2.1.zip](https://github.com/AlbertHoffpauir/FurysAccountSync/raw/main/downloads/FurysAccountSync-0.2.1.zip).
+- **The addon:** get it from [ESOUI](https://www.esoui.com/downloads/info5106-FurysAccountSync.html) or Minion. The same files are in [`FurysAccountSync/`](FurysAccountSync/) here, and as [FurysAccountSync-0.2.2.zip](https://github.com/AlbertHoffpauir/FurysAccountSync/raw/main/downloads/FurysAccountSync-0.2.2.zip).
 - **Windows tool** (optional): copies addon settings and the base game's window positions with the game closed, for every addon in the folder, with a full backup first. **[Download FurysAccountSync-WindowsTool-0.1.5.zip](https://github.com/AlbertHoffpauir/FurysAccountSync/raw/main/downloads/FurysAccountSync-WindowsTool-0.1.5.zip)**, unzip it anywhere and double-click `Fury's Account Sync.cmd`.
 
 The tool is made of plain-text scripts (batch and PowerShell) you can open in Notepad. It only reads and writes the addon saved data files in `Documents\Elder Scrolls Online\live\SavedVariables`, keeps its backups and choices next to that folder, and never connects to the internet. It is a separate download because ESOUI addon zips may only hold addon files.

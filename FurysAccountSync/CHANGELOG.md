@@ -1,12 +1,16 @@
 # Changelog
 
+## 0.2.2
+- Clearer wording: the settings and tooltips now say "starts turned off".
+- The addon list shows the right version next to the name again.
+
 ## 0.2.1
 - Front bar and Back bar are one tickbox again: "Skill bars".
 - "Get the Windows tool" opens the project page on GitHub.
 
 ## 0.2.0
-- Addon settings are copied in game. Tick "Addon settings" under What to copy: Apply then also copies the main's settings for every addon on the list that is turned on for the account, and reloads the UI so they load. Stats, logs and collected data stay as each account has them, and data addons are never touched. Starts off.
-- The base game's chat window, meters and quest tracker positions can be copied too ("Chat window, meters and quest tracker"). Starts off.
+- Addon settings are copied in game. Tick "Addon settings" under What to copy: Apply then also copies the main's settings for every addon on the list that is turned on for the account, and reloads the UI so they load. Stats, logs and collected data stay as each account has them, and data addons are never touched. Starts turned off.
+- The base game's chat window, meters and quest tracker positions can be copied too ("Chat window, meters and quest tracker"). Starts turned off.
 - "Undo addon copies" in the settings (or `/fas undo`) puts back the addon settings the account had before it first copied, for a month.
 - With "Automatically when I log in", addon settings are copied once per account for each snapshot.
 - After the reload the window shows the report of what was copied.
