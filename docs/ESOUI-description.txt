@@ -1,0 +1,125 @@
+[QUOTE][B]AI disclosure:[/B] This addon's code was written with the assistance of an AI coding assistant (Claude by Anthropic), working from my designs and instructions. I test every release in game on my own accounts before it goes up, and I maintain it. Please report any problem in the comments.
+
+[COLOR="#A08CFF"][B]Credits[/B][/COLOR]
+[LIST]
+[*][COLOR="#B4B0D8"]Settings page uses [B]LibAddonMenu-2.0[/B] by Seerah and sirinsidiator.[/COLOR]
+[*][COLOR="#B4B0D8"]Thanks to the authors of [B]Synced Account Settings[/B] and [B]Wizard's Wardrobe[/B], whose addons showed which game functions do the job.[/COLOR]
+[*][COLOR="#B4B0D8"]Game API details from the ESOUI wiki and ZeniMax's ESO UI source code.[/COLOR]
+[/LIST][/QUOTE]
+
+[CENTER][SIZE="6"][FONT="Georgia"][COLOR="#A08CFF"][B]Fury's Account Sync[/B][/COLOR][/FONT][/SIZE]
+[SIZE="3"][COLOR="#5CC2FF"][I]Set up one account. Every other account on your PC matches it.[/I][/COLOR][/SIZE][/CENTER]
+[CENTER][SIZE="1"][COLOR="#B4B0D8"]FURY'S ADDONS[/COLOR]   [URL="https://www.esoui.com/downloads/info5063.html"]Guild Management Toolset[/URL]   |   [URL="https://www.esoui.com/downloads/info5078.html"]Character Tracker[/URL]   |   [URL="https://www.esoui.com/downloads/info5099.html"]Inventory Ledger[/URL][/SIZE][/CENTER]
+
+[B]Play more than one account on the same PC?[/B] Set up your main account the way you like it, and your other accounts copy it: the game's settings pages, every keybind, the chat look, addon settings and window positions. Character builds are saved once and loaded onto any character on any account.
+[QUOTE][SIZE="3"][COLOR="#5CC2FF"][B]One setup for every account[/B][/COLOR][/SIZE]
+ESO keeps its settings, keybinds and chat colors [B]per character[/B], and every addon keeps its settings [B]per account[/B]. With several accounts that means setting everything up again and again. This addon reads it once on your main account and applies it wherever you log in, and it shows you every change before anything is touched.[/QUOTE]
+[LIST]
+[*][COLOR="#A08CFF"][B]Everything starts off.[/B][/COLOR]  Nothing changes on any account until you pick a main account and turn copying on for the others.
+[*][COLOR="#A08CFF"][B]Preview first.[/B][/COLOR]  The window lists every setting, keybind and addon that would change. Nothing happens until you press Apply.
+[*][COLOR="#A08CFF"][B]Your data is never copied.[/B][/COLOR]  Addon settings are copied. Inventories, character knowledge, guild history, sales and logs stay with each account, and addons it doesn't know are left alone.
+[*][COLOR="#A08CFF"][B]Undo.[/B][/COLOR]  The addon settings an account had before it copied can be put back for a month.
+[*][COLOR="#A08CFF"][B]Stays on your PC.[/B][/COLOR]  Every account on one PC shares this addon's saved file. That is how they see each other, and nothing is sent anywhere.
+[/LIST]
+[B]Requires:[/B] [URL="https://www.esoui.com/downloads/info7-LibAddonMenu.html"]LibAddonMenu-2.0[/URL] (version 43 or newer). Install it separately, from the link or by searching for LibAddonMenu in Minion. Without it, this addon will not load.
+
+[SIZE="4"][FONT="Georgia"][COLOR="#5CC2FF"][B]At a glance[/B][/COLOR][/FONT][/SIZE]
+[QUOTE][LIST]
+[*][COLOR="#A08CFF"][B]Game settings:[/B][/COLOR]  The Gameplay, Camera, Interface, Nameplates, Social, Combat and Accessibility pages. Each page can be left out.
+[*][COLOR="#A08CFF"][B]Keybinds:[/B][/COLOR]  Every key you can rebind, addon keybinds included. A key that is in the way is cleared first.
+[*][COLOR="#A08CFF"][B]Chat look:[/B][/COLOR]  The color of every chat channel, the text size and how far the window fades.
+[*][COLOR="#A08CFF"][B]Addon settings:[/B][/COLOR]  Options, colors and window positions of about 75 addons, copied in game. Their stats, logs and collected data stay.
+[*][COLOR="#A08CFF"][B]Window layout:[/B][/COLOR]  Where the base game's chat window, meters and quest tracker sit.
+[*][COLOR="#A08CFF"][B]Character builds:[/B][/COLOR]  Skill bars, champion stars and quickslots, saved by name. You tick which parts to load.
+[/LIST][/QUOTE]
+
+[SIZE="4"][FONT="Georgia"][COLOR="#5CC2FF"][B]Getting started[/B][/COLOR][/FONT][/SIZE]
+[LIST=1]
+[*]Install [B]LibAddonMenu-2.0[/B] (see Requires above) and turn this addon on for every account.
+[*]Log in on your main account. Open Settings > Addons > Fury's Account Sync and press [B]Make this account the main[/B].
+[*]Type [FONT="Courier New"][B]/fas[/B][/FONT] and press [B]Take snapshot[/B]. Or tick [B]Take a snapshot automatically[/B] and it stays up to date by itself.
+[*]Log in on another account. In the same settings page, set [B]Copy the main's setup[/B] to [B]Ask me when I log in[/B] or [B]Automatically when I log in[/B].
+[*][FONT="Courier New"][B]/fas[/B][/FONT] shows exactly what would change. Press [B]Apply to this character[/B].
+[/LIST]
+
+[SIZE="4"][FONT="Georgia"][COLOR="#5CC2FF"][B]What it copies[/B][/COLOR][/FONT][/SIZE]
+[LIST]
+[*][B]The game's Settings pages:[/B] Gameplay, Camera, Interface, Nameplates, Social, Combat and Accessibility. The list of options is read from the game itself, so new options are picked up without an update.
+[*][B]Keybinds:[/B] every key you can rebind, including addon keybinds. They are sent a few at a time, a key held by something else is cleared first, and anything that didn't land is tried once more and then reported. An addon's keybind is copied once that addon is turned on for the account.
+[*][B]Chat look:[/B] the color of every chat channel, the chat text size and how far the chat window fades.
+[*][B]Addon settings[/B] (starts off): the main's settings for every addon on the list that is turned on for the account. See the next section.
+[*][B]Chat window, meters and quest tracker[/B] (starts off): where they sit, taken from the character the snapshot was made on.
+[/LIST]
+Graphics and sound aren't copied because every account on the same PC already shares them.
+
+[SIZE="4"][FONT="Georgia"][COLOR="#5CC2FF"][B]Addon settings[/B][/COLOR][/FONT][/SIZE]
+[COLOR="#B4B0D8"][I]Tick "Addon settings" under What to copy. Starts off.[/I][/COLOR]
+[LIST]
+[*]Every addon's saved data holds a section for each account on the PC. Apply copies the main's section to the account you're on and then reloads the UI, which is what makes the addons load it.
+[*][B]Settings addons[/B] are copied whole: Bandits User Interface, Fancy Action Bar+, Combat Metrics, Hodor Reflexes, Raid Notifier, Crutch Alerts, Perfect Pixel, Personal Assistant, Auto Category, Advanced Filters, WritWorthy and many more.
+[*][B]Addons that mix settings and data[/B] keep their data: pChat keeps its chat history, Tamriel Trade Centre its prices, Wizard's Wardrobe its account storage, Dolgubon's Lazy Writ Crafter its reward stats, Beam Me Up its counters.
+[*][B]Data addons are never touched:[/B] Character Knowledge, Inventory Insight, CraftStore, HarvestMap, LibHistoire, Awesome Guild Store, Leo's Altholic, Furniture Catalogue, FCO ItemSaver, fight logs and the like.
+[*]An addon that isn't on the list is left alone. The list is the file Rules.lua in the addon's folder. Ask in the comments and I'll add yours.
+[*]The main's addon settings are read from its saved data, which the game writes when the main logs out or reloads the UI.
+[*][B]Undo addon copies[/B] in the settings, or [FONT="Courier New"][B]/fas undo[/B][/FONT], puts back the addon settings the account had before it first copied. They are kept for a month.
+[/LIST]
+
+[SIZE="4"][FONT="Georgia"][COLOR="#5CC2FF"][B]Each character copies once[/B][/COLOR][/FONT][/SIZE]
+The game keeps settings, keybinds and chat colors per character, so every character on an account copies the snapshot once. With [B]Automatically when I log in[/B] that happens by itself the first time each character logs in after a new snapshot. With [B]Ask me when I log in[/B] the window opens with the list of changes and waits for you. After copying, the window lists what was copied and anything the game didn't accept. Addon settings belong to the account, so they are copied once per account for each new snapshot, not again for every character.
+
+[SIZE="4"][FONT="Georgia"][COLOR="#5CC2FF"][B]Character builds[/B][/COLOR][/FONT][/SIZE]
+[COLOR="#B4B0D8"][I]Tick "Character builds" in the settings. Starts off.[/I][/COLOR]
+[LIST]
+[*][B]Save build[/B] saves this character's front and back skill bars, champion point stars and quickslot wheel under a name.
+[*][B]Load build[/B] puts a saved build on the character you're on, out of combat. Every account on the PC can load it.
+[*]The tickboxes under it choose what gets loaded: [B]Front bar[/B], [B]Back bar[/B], [B]Champion stars[/B], [B]Quickslots[/B].
+[*]Anything that doesn't fit is skipped and listed: another class's skills, skills not unlocked yet, champion stars not unlocked, items not in the bag, collectibles not owned. If the character has a different morph of a skill, its own morph is slotted.
+[*]Points spent in skills and champion trees are not changed.
+[/LIST]
+
+[SIZE="4"][FONT="Georgia"][COLOR="#5CC2FF"][B]If you use Synced Account Settings[/B][/COLOR][/FONT][/SIZE]
+Turn it off, or untick its Sync option. On any account where you pressed its Save button it puts its saved settings and keybinds back after every login. On the main that can erase a change before the snapshot is taken, and this addon warns you there. On an account that copies the main it would undo the copy, so this addon copies nothing there while it is active, and says so.
+
+[SIZE="4"][FONT="Georgia"][COLOR="#5CC2FF"][B]The Windows tool[/B][/COLOR][/FONT][/SIZE]
+[COLOR="#B4B0D8"][I]Optional, separate download. The addon works in game without it.[/I][/COLOR]
+A small Windows tool copies addon settings with the game closed. Use it for addons that aren't turned on for an account, for addons that aren't on the list (you tick them yourself), and when you want a full backup first.
+[LIST=1]
+[*]Download the [B][URL="https://github.com/AlbertHoffpauir/FurysAccountSync/raw/main/downloads/FurysAccountSync-WindowsTool-0.1.5.zip"]Windows tool zip[/URL][/B] and unzip it anywhere. It is a separate download because ESOUI addon zips may only hold addon files.
+[*]Close the game and double-click [B]Fury's Account Sync.cmd[/B]. Pick the main account, tick the accounts to copy to, and press [B]Preview[/B].
+[*][B]Apply[/B] backs up the whole SavedVariables folder first, writes the changes, reads every file back and checks it. [B]Restore a backup[/B] undoes it.
+[/LIST]
+[B]What the script does.[/B] The .cmd and .ps1 files in the zip are plain-text scripts (batch and PowerShell) you can open in Notepad and read. They only read and write the addon saved data files in Documents\Elder Scrolls Online\live\SavedVariables, and write backups next to that folder. They never run while the game is running, never copy addon data, never change the main account's own sections and never connect to the internet. Nothing runs unless you start it. Source: [URL="https://github.com/AlbertHoffpauir/FurysAccountSync"]GitHub[/URL].
+
+[SIZE="4"][FONT="Georgia"][COLOR="#5CC2FF"][B]Settings, commands and keys[/B][/COLOR][/FONT][/SIZE]
+[B]Settings:[/B] the gear in the window, Settings > Addons > Fury's Account Sync, or [FONT="Courier New"][B]/fas settings[/B][/FONT].
+[B]Key:[/B] Controls > Addon Keybinds > Fury's Account Sync has "Open Fury's Account Sync". It starts unbound.
+[LIST]
+[*][FONT="Courier New"][B]/fas[/B][/FONT] open the window
+[*][FONT="Courier New"][B]/fas snapshot[/B][/FONT] take a snapshot (main account)
+[*][FONT="Courier New"][B]/fas apply[/B][/FONT] copy the main's setup onto this character
+[*][FONT="Courier New"][B]/fas undo[/B][/FONT] put back the addon settings the account had before it copied
+[*][FONT="Courier New"][B]/fas settings[/B][/FONT] the settings page
+[/LIST]
+
+[SIZE="4"][FONT="Georgia"][COLOR="#5CC2FF"][B]Questions[/B][/COLOR][/FONT][/SIZE]
+[B]Do my accounts have to be on the same PC?[/B]
+Yes. The accounts find each other through this addon's saved file, which every account on one PC shares.
+
+[B]Can I change the main account later?[/B]
+Yes. Log in on the new one and press Make this account the main, then take a snapshot.
+
+[B]An alt changed something by itself. Does it get overwritten?[/B]
+Only when the main has a newer snapshot and copying is turned on for that account. Pick "Ask me when I log in" to see the list first, or "Off" to keep an account as it is.
+
+[B]I play two accounts at once (two game clients). Anything to know?[/B]
+Each client writes its saved data at logout or /reloadui, and the one that saves last wins. Take the snapshot and log the main out before the other client logs in.
+
+[B]Why does the UI reload after Apply?[/B]
+Addons read their settings when the UI loads. The reload only happens when addon settings or window layout were copied.
+
+
+[SIZE="4"][FONT="Georgia"][COLOR="#5CC2FF"][B]Bugs, ideas and source[/B][/COLOR][/FONT][/SIZE]
+Bug reports and ideas are welcome in the comments.
+Source code: [URL="https://github.com/AlbertHoffpauir/FurysAccountSync"]GitHub[/URL]
+
+[CENTER][SIZE="1"][COLOR="#B4B0D8"]FURY'S ADDONS[/COLOR]   [URL="https://www.esoui.com/downloads/info5063.html"]Guild Management Toolset[/URL]   |   [URL="https://www.esoui.com/downloads/info5078.html"]Character Tracker[/URL]   |   [URL="https://www.esoui.com/downloads/info5099.html"]Inventory Ledger[/URL][/SIZE][/CENTER]
