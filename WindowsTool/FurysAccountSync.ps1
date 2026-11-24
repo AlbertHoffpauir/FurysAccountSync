@@ -15,7 +15,7 @@
 param([string]$Live, [string]$SelfTest, [switch]$KeepConsole, [switch]$Launch, [switch]$Detached)
 
 $ErrorActionPreference = 'Stop'
-$toolVersion = '0.1.7'
+$toolVersion = '0.1.9'
 
 # Anything that goes wrong while the window is being built is shown instead of the window just closing.
 # Started by the .cmd file: start this script again in a process of its own with no console window,
@@ -344,7 +344,11 @@ function Save-Choices {
 }
 
 # ---- what the buttons do ----
-function Do-Preview {
+function Show-PreviewResult([string]$text) {
+    [System.Windows.Forms.MessageBox]::Show($text, "Fury's Account Sync - Preview", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information) | Out-Null
+}
+
+function Do-Preview([switch]$Quiet) {
     Invalidate-Plan
     $alts = @(Get-TickedAlts)
     if (-not $mainBox.SelectedItem) { Log 'Pick your main account first.'; return }
@@ -373,6 +377,7 @@ function Do-Preview {
     }
     if ($plan.Count -eq 0) {
         Log 'Preview: everything ticked already matches the main. Nothing to do.'
+        if (-not $Quiet) { Show-PreviewResult "Everything you ticked already matches $([string]$mainBox.SelectedItem). There is nothing to copy." }
         return
     }
     $fileWord = 'files'
@@ -387,6 +392,21 @@ function Do-Preview {
     }
     $script:plan = $plan
     $btnApply.Enabled = $true
+    if (-not $Quiet) {
+        $acctWord = 'accounts'
+        if ($alts.Count -eq 1) { $acctWord = 'account' }
+        $lines = @()
+        foreach ($p in @($plan | Select-Object -First 18)) {
+            $n = $p.Changes.Count
+            if ($n -eq 1) { $lines += "    $($p.Name): 1 change" } else { $lines += "    $($p.Name): $n changes" }
+        }
+        if ($plan.Count -gt 18) { $lines += "    and $($plan.Count - 18) more" }
+        $summary = "{0} saved {1} would change for {2} {3}." -f $plan.Count, $fileWord, $alts.Count, $acctWord
+        $summary += "`n`nNothing has been changed yet. Press Apply to copy, with a backup first."
+        $summary += "`n`n" + ($lines -join "`n")
+        $summary += "`n`nThe Will change column shows every file, and the box at the bottom lists the details."
+        Show-PreviewResult $summary
+    }
 }
 
 function Do-Apply {
@@ -519,7 +539,7 @@ if ($script:testing) {
                 if ($altList.Items.Count -eq 0) { throw 'no other account to try' }
                 for ($i = 0; $i -lt $altList.Items.Count; $i++) { $altList.SetItemChecked($i, ($i -eq 0)) }
                 if ($charBox.Items.Count -gt 0) { $baseCheck.Checked = $true }
-                Do-Preview
+                Do-Preview -Quiet
                 $planned = 0
                 if ($script:plan) { $planned = @($script:plan).Count }
                 Log ("SELF TEST: {0} files ticked; preview for {1}: {2} files would change; Apply button on: {3}" -f `

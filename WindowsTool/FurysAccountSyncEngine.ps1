@@ -88,6 +88,9 @@ namespace FuryAS
         public List<string> Names = new List<string>();
         public List<Node> Roots = new List<Node>();
         public string Newline = "\n";             // the game writes Windows line endings
+        public bool Compact;                      // the file is written with no spaces or line breaks at all
+        public string Between = "";               // compact files: what stands between two assignments
+        public string Tail = "";                  // compact files: what follows the last assignment
 
         public Node Get(string name)
         {
@@ -199,13 +202,19 @@ namespace FuryAS
             Reader r = new Reader(text);
             SvFile f = new SvFile();
             if (text.Contains("\r\n")) f.Newline = "\r\n";
+            // Newer game versions save these files with no spaces or line breaks at all: Name={["k"]=1,}
+            int endOfLast = -1;
             while (!r.AtEnd())
             {
+                if (endOfLast >= 0 && f.Names.Count == 1) f.Between = text.Substring(endOfLast, r.P - endOfLast);
                 string name = r.Word();
+                if (f.Names.Count == 0 && r.P + 1 < text.Length && text[r.P] == '=' && text[r.P + 1] == '{') f.Compact = true;
                 r.Expect('=');
                 f.Names.Add(name);
                 f.Roots.Add(r.Value());
+                endOfLast = r.P;
             }
+            if (endOfLast >= 0) f.Tail = text.Substring(endOfLast);
             return f;
         }
 
@@ -223,9 +232,33 @@ namespace FuryAS
             sb.Append(nl).Append(' ', indent).Append('}');
         }
 
+        public static void WriteCompact(StringBuilder sb, Node n)
+        {
+            if (!n.IsTable) { sb.Append(n.Raw); return; }
+            sb.Append('{');
+            for (int i = 0; i < n.Keys.Count; i++)
+            {
+                sb.Append('[').Append(n.Keys[i]).Append("]=");
+                WriteCompact(sb, n.Values[i]);
+                sb.Append(',');
+            }
+            sb.Append('}');
+        }
+
         public static string Serialize(SvFile f)
         {
             StringBuilder sb = new StringBuilder();
+            if (f.Compact)
+            {
+                for (int i = 0; i < f.Names.Count; i++)
+                {
+                    if (i > 0) sb.Append(f.Between);
+                    sb.Append(f.Names[i]).Append('=');
+                    WriteCompact(sb, f.Roots[i]);
+                }
+                sb.Append(f.Tail);
+                return sb.ToString();
+            }
             for (int i = 0; i < f.Names.Count; i++)
             {
                 sb.Append(f.Names[i]).Append(" =");

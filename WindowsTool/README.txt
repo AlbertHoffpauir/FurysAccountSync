@@ -17,7 +17,7 @@ also copy addon settings in game, for addons that are turned on for the account.
 addon in the folder, turned on or not, and makes a full backup first.
 Graphics and sound are already the same for every account on one PC.
 
-Version 0.1.7
+Version 0.1.9
 
 Where to put it
 ---------------
@@ -70,6 +70,9 @@ To keep the black window showing all the time, run
 
 Changes
 -------
+0.1.9  Preview now opens a summary of what would change.
+0.1.8  Reads the saved files the game now writes without spaces or line breaks. Before, those showed
+       as "layout is unusual" and the character list was empty.
 0.1.7  Fixes 0.1.6, where the tool started but its window stayed hidden.
 0.1.6  No black window any more: the launcher starts the tool without a console and closes at once,
        so nothing is left on the desktop when the tool closes. (0.1.4 and 0.1.5 could leave a minimized
