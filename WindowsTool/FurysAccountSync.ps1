@@ -15,7 +15,7 @@
 param([string]$Live, [string]$SelfTest, [switch]$KeepConsole, [switch]$Launch, [switch]$Detached)
 
 $ErrorActionPreference = 'Stop'
-$toolVersion = '0.1.6'
+$toolVersion = '0.1.7'
 
 # Anything that goes wrong while the window is being built is shown instead of the window just closing.
 # Started by the .cmd file: start this script again in a process of its own with no console window,
@@ -484,6 +484,7 @@ $timer.Start()
 
 $form.Add_Shown({
     Guard {
+        if ($Detached) { [void][FuryAS.Show]::ShowWindow($form.Handle, 5); [void][FuryAS.Show]::SetForegroundWindow($form.Handle) }
         $form.Refresh()
         $form.Activate()
         [void](Update-GameStatus)
@@ -542,6 +543,17 @@ if ($script:testing) {
     })
 }
 
+# Started without a console (-Detached), Windows is told to hide this program's first window. A throwaway
+# window takes that, and the Shown step above then shows the real one for certain.
+if ($Detached) {
+    Add-Type -Namespace FuryAS -Name Show -MemberDefinition '[DllImport("user32.dll")] public static extern bool ShowWindow(IntPtr h, int n); [DllImport("user32.dll")] public static extern bool SetForegroundWindow(IntPtr h);'
+    $first = New-Object System.Windows.Forms.Form
+    $first.ShowInTaskbar = $false
+    $first.Opacity = 0
+    $first.Show()
+    $first.Close()
+    $first.Dispose()
+}
 [void]$form.ShowDialog()
 
 if ($script:testing) {
