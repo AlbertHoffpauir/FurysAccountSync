@@ -17,7 +17,7 @@ also copy addon settings in game, for addons that are turned on for the account.
 addon in the folder, turned on or not, and makes a full backup first.
 Graphics and sound are already the same for every account on one PC.
 
-Version 0.1.5
+Version 0.1.6
 
 Where to put it
 ---------------
@@ -70,13 +70,14 @@ To keep the black window showing all the time, run
 
 Changes
 -------
+0.1.6  No black window any more: the launcher starts the tool without a console and closes at once,
+       so nothing is left on the desktop when the tool closes. (0.1.4 and 0.1.5 could leave a minimized
+       black window behind.)
 0.1.5  Apply works. (Up to 0.1.4 it stopped right after making the backup and wrote nothing.) A problem
        is shown in a message, not only in the box at the bottom. Everything in that box is also kept in
        FurysAccountSync-log.txt next to the tool. The base game box is named for what it copies: the
        chat window, meters and quest tracker. Chat tabs are kept by the game's server, not in a file,
        so this tool can't copy them.
-0.1.4  The black console window hides while the tool's window is open. It comes back if something goes
-       wrong, so the message in it can be read.
 0.1.3  The window stays open. (0.1.2 closed by itself after a few seconds because it started in its
        troubleshooting mode.) Preview and Apply now include the ticked addons for every ticked account,
        not only the chat tabs and window positions. The title bar shows the version. A problem at start

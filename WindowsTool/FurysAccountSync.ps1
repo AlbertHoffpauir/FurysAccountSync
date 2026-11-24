@@ -9,37 +9,25 @@
 #   -SelfTest <folder>  for troubleshooting: opens the window, runs a preview for the first other
 #                       account, saves a log and a picture of the window into <folder>, and closes.
 #                       It never changes a saved file.
-#   -KeepConsole        leave the black console window showing while the tool's window is open
+#   -KeepConsole        (given to the .cmd file) keep the black console window open while the tool runs
+#   -Launch, -Detached  used by the .cmd file: start the tool again without a console window, then leave
 
-param([string]$Live, [string]$SelfTest, [switch]$KeepConsole)
+param([string]$Live, [string]$SelfTest, [switch]$KeepConsole, [switch]$Launch, [switch]$Detached)
 
 $ErrorActionPreference = 'Stop'
-$toolVersion = '0.1.5'
+$toolVersion = '0.1.6'
 
 # Anything that goes wrong while the window is being built is shown instead of the window just closing.
-# The black console window that the .cmd file opens is hidden while the tool's window is up. It comes
-# back when the window closes or when something goes wrong, so a message in it is never lost.
-if (-not ('FuryAS.Native' -as [type])) {
-    Add-Type -Namespace FuryAS -Name Native -MemberDefinition @'
-[DllImport("kernel32.dll")] public static extern IntPtr GetConsoleWindow();
-[DllImport("user32.dll")] public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
-'@
-}
-$consoleHidden = $false
-function Show-Console([bool]$show) {
-    $handle = [FuryAS.Native]::GetConsoleWindow()
-    if ($handle -eq [IntPtr]::Zero) { return }
-    if ($show) {
-        if ($script:consoleHidden) { [void][FuryAS.Native]::ShowWindow($handle, 5) }
-        $script:consoleHidden = $false
-    } else {
-        [void][FuryAS.Native]::ShowWindow($handle, 0)
-        $script:consoleHidden = $true
-    }
+# Started by the .cmd file: start this script again in a process of its own with no console window,
+# then leave, so the black window closes at once and nothing is left behind when the tool closes.
+if ($Launch) {
+    $relaunch = @('-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', ('"' + $PSCommandPath + '"'), '-Detached')
+    if ($Live) { $relaunch += @('-Live', ('"' + $Live + '"')) }
+    Start-Process -FilePath (Join-Path $PSHOME 'powershell.exe') -ArgumentList $relaunch -WindowStyle Hidden
+    exit 0
 }
 
 trap {
-    if (Get-Command Show-Console -ErrorAction SilentlyContinue) { Show-Console $true }
     $problem = "Fury's Account Sync couldn't start.`n`n$($_.Exception.Message)`n(line $($_.InvocationInfo.ScriptLineNumber))"
     Write-Host $problem
     Add-Type -AssemblyName System.Windows.Forms
@@ -497,7 +485,7 @@ $timer.Start()
 $form.Add_Shown({
     Guard {
         $form.Refresh()
-        if (-not $KeepConsole -and -not $script:testing) { Show-Console $false; $form.Activate() }
+        $form.Activate()
         [void](Update-GameStatus)
         Load-Folder
         Log 'Tick the accounts to copy to and the addons to copy, then press Preview.'
@@ -555,7 +543,6 @@ if ($script:testing) {
 }
 
 [void]$form.ShowDialog()
-Show-Console $true
 
 if ($script:testing) {
     $script:logLines | ForEach-Object { Write-Output $_ }

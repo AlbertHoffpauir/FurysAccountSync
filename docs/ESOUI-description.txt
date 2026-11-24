@@ -84,7 +84,7 @@ Turn it off, or untick its Sync option. On any account where you pressed its Sav
 [COLOR="#B4B0D8"][I]Optional, separate download. The addon works in game without it.[/I][/COLOR]
 A small Windows tool copies addon settings with the game closed. Use it for addons that aren't turned on for an account, for addons that aren't on the list (you tick them yourself), and when you want a full backup first.
 [LIST=1]
-[*]Download the [B][URL="https://github.com/AlbertHoffpauir/FurysAccountSync/raw/main/downloads/FurysAccountSync-WindowsTool-0.1.5.zip"]Windows tool zip[/URL][/B] and unzip it anywhere. It is a separate download because ESOUI addon zips may only hold addon files.
+[*]Download the [B][URL="https://github.com/AlbertHoffpauir/FurysAccountSync/raw/main/downloads/FurysAccountSync-WindowsTool-0.1.6.zip"]Windows tool zip[/URL][/B] and unzip it anywhere. It is a separate download because ESOUI addon zips may only hold addon files.
 [*]Close the game and double-click [B]Fury's Account Sync.cmd[/B]. Pick the main account, tick the accounts to copy to, and press [B]Preview[/B].
 [*][B]Apply[/B] backs up the whole SavedVariables folder first, writes the changes, reads every file back and checks it. [B]Restore a backup[/B] undoes it.
 [/LIST]
