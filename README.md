@@ -6,7 +6,7 @@ An Elder Scrolls Online addon for people who play more than one account on the s
 
 ## Downloads
 
-- **The addon:** get it from [ESOUI](https://www.esoui.com/downloads/info5106-FurysAccountSync.html) or Minion. The same files are in [`FurysAccountSync/`](FurysAccountSync/) here, and as [FurysAccountSync-0.5.2.zip](https://github.com/AlbertHoffpauir/FurysAccountSync/raw/main/downloads/FurysAccountSync-0.5.2.zip).
+- **The addon:** get it from [ESOUI](https://www.esoui.com/downloads/info5106-FurysAccountSync.html) or Minion. The same files are in [`FurysAccountSync/`](FurysAccountSync/) here, and as [FurysAccountSync-0.5.3.zip](https://github.com/AlbertHoffpauir/FurysAccountSync/raw/main/downloads/FurysAccountSync-0.5.3.zip).
 - **Windows tool** (optional): copies addon settings and the base game's window positions with the game closed, for every addon in the folder, with a full backup first. Copying addon settings can break an addon, so only a small set of well-known addons is ticked to begin with. **[Download FurysAccountSync-WindowsTool-0.2.1.zip](https://github.com/AlbertHoffpauir/FurysAccountSync/raw/main/downloads/FurysAccountSync-WindowsTool-0.2.1.zip)**, unzip it anywhere and double-click `Fury's Account Sync.cmd`.
 
 The tool is made of plain-text scripts (batch and PowerShell) you can open in Notepad. It only reads and writes the addon saved data files in `Documents\Elder Scrolls Online\live\SavedVariables`, keeps its backups and choices next to that folder, and never connects to the internet. It is a separate download because ESOUI addon zips may only hold addon files.
@@ -29,6 +29,14 @@ The tool is made of plain-text scripts (batch and PowerShell) you can open in No
 | `WindowsTool/` | The Windows tool (`Fury's Account Sync.cmd`). See its [README](WindowsTool/README.txt). |
 | `downloads/` | Ready-made zips of both for each release. |
 | `docs/` | The ESOUI page description. |
+
+## More from Fury
+
+- [Fury's Guild Management Toolset](https://www.esoui.com/downloads/info5063.html): an officer's toolkit: bank alerts, member and inactivity reports, trader week totals, raffles, event sign-ups and recruiting.
+- [Fury's Character Tracker](https://www.esoui.com/downloads/info5078.html): every character on one board: skill lines, crafting, research, daily writs, wallet and gear.
+- [Fury's Inventory Ledger](https://www.esoui.com/downloads/info5099.html): every item you own in one list, across all your characters, the bank and your houses, with export to Excel.
+
+All free on ESOUI and in Minion.
 
 ## Credits
 

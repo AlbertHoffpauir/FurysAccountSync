@@ -133,6 +133,14 @@ Each client writes its saved data at logout or /reloadui, and the one that saves
 Addons read their settings when the UI loads. The reload only happens when addon settings or window layout were copied, and a pop-up asks first, so you can cancel and reload later.
 
 
+[SIZE="4"][FONT="Georgia"][COLOR="#5CC2FF"][B]More from Fury[/B][/COLOR][/FONT][/SIZE]
+[LIST]
+[*][URL="https://www.esoui.com/downloads/info5063.html"][B]Fury's Guild Management Toolset[/B][/URL]: an officer's toolkit: bank alerts, member and inactivity reports, trader week totals, raffles, event sign-ups and recruiting.
+[*][URL="https://www.esoui.com/downloads/info5078.html"][B]Fury's Character Tracker[/B][/URL]: every character on one board: skill lines, crafting, research, daily writs, wallet and gear.
+[*][URL="https://www.esoui.com/downloads/info5099.html"][B]Fury's Inventory Ledger[/B][/URL]: every item you own in one list, across all your characters, the bank and your houses, with export to Excel.
+[/LIST]
+All free here on ESOUI and in Minion.
+
 [SIZE="4"][FONT="Georgia"][COLOR="#5CC2FF"][B]Bugs, ideas and source[/B][/COLOR][/FONT][/SIZE]
 Bug reports and ideas are welcome in the comments.
 Source code: [URL="https://github.com/AlbertHoffpauir/FurysAccountSync"]GitHub[/URL]

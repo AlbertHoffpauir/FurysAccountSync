@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.5.3
+- **More from Fury.** The Start here page and the settings page now end with a short list of my other addons, with a button in the settings that opens each one's ESOUI page (the game asks first). No chat lines, no pop-ups.
+
 ## 0.5.2
 - **One look across all of Fury's addons.** Every window now has the same header as the Guild Toolset: the name with its version, a **Start here** button right after it, the settings gear and the close button at the right, and a hover tip on each.
 - **New: Start here page** (the button in the window, or `/fas start`): how it works in one page, from picking the main account to undo.

@@ -266,6 +266,7 @@ function AS.InitSettings()
         func = function() RequestOpenUnsafeURL(AS.toolUrl) end,
     }
 
+    AS.Theme.MoreOptions(controls)   -- 0.5.3: the other Fury addons, at the very end
     LAM:RegisterOptionControls("FurysAccountSync_Settings", controls)
 end
 
