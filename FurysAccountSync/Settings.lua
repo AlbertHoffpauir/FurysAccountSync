@@ -19,6 +19,7 @@ function AS.InitSettings()
         displayName = "|cA08CFF" .. AS.title .. "|r",
         author = "Furyous",
         version = AS.version,
+        website = "https://www.esoui.com/downloads/info5106.html",
         slashCommand = "/fassettings",
         registerForRefresh = true,
     })

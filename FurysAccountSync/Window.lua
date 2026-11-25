@@ -18,7 +18,35 @@ local replaceArmed       -- name of the build Save build asked about replacing
 local reportShown = false   -- the report line's box sits under the buttons until the window closes
 local note        -- one-off line shown above the preview (e.g. "the main's setup changed")
 
-ZO_CreateStringId("SI_BINDING_NAME_FURYSACCOUNTSYNC_TOGGLE", "Open Fury's Account Sync")
+ZO_CreateStringId("SI_BINDING_NAME_FURYSACCOUNTSYNC_TOGGLE", "Open/close the window")
+
+------------------------------------------------------------------------------
+-- Start here (0.5.2): one page on how it works, the same window as every Fury addon.
+------------------------------------------------------------------------------
+local START = {
+    { title = "1. Pick your main account", lines = {
+        "Every account on this PC shares this addon's saved file. Log in on the account the others should look like, type /fas and press Make this account the main.",
+    } },
+    { title = "2. Take a snapshot", lines = {
+        "Press Take snapshot on the main (or turn on Take a snapshot automatically in the settings). The window tells you when something changed since the last one.",
+    } },
+    { title = "3. Copy it to your other accounts", lines = {
+        "Log in on another account and type /fas. Show changes lists exactly what will change; Apply to this character copies it.",
+        "The game keeps settings, keybinds and chat colors per character, so each character copies once. Click At login until it says Ask me or Automatic to have that happen by itself.",
+    } },
+    { title = "4. Builds", lines = {
+        "Turn on Character builds in the settings to save a character's skill bars, champion stars, quickslots and gear as a build, and load it onto any character on any account. Anything a character can't use is skipped.",
+    } },
+    { title = "5. If something goes wrong", lines = {
+        "Copying addon settings can break an addon. Undo addon copies puts this account's own addon settings back, and /fas undo NAME does it for one addon.",
+        "Everything starts turned off. The gear at the top right opens the settings, and /fas help lists every command.",
+    } },
+}
+
+function AS.ShowStart()
+    AS.Theme.StartPage(FurysAccountSync_StartHere,
+        AS.title .. " v" .. AS.version .. ": set up one account, and every other account on your PC matches it.", START)
+end
 
 function AS.Tip(control, text)
     InitializeTooltip(InformationTooltip, control, BOTTOM, 0, -4)
@@ -32,7 +60,7 @@ end
 
 local function StatusLine()
     local sv = AS.SV()
-    local me = "v" .. AS.version .. "  -  " .. GetDisplayName()
+    local me = GetDisplayName()
     if not sv.main then return me .. "  -  no main account chosen yet" end
     if AS.IsMain() then return me .. "  -  main account" end
     local mode = AS.AccountRecord().mode
@@ -352,6 +380,12 @@ function AS.InitWindow()
     scene:AddFragment(ZO_SimpleSceneFragment:New(win))
 
     AS.Theme.Window(win)
+    -- 0.5.2: the same header as every Fury addon (Theme.lua): title and version, Start here
+    -- after them, the gear and close button at the right, each with a hover tip.
+    AS.Theme.SetTitle(win, AS.title, AS.version)
+    AS.Theme.StartButton(win, AS.ShowStart,
+        "New here? One page on how it works: the main account, snapshots, copying to your other accounts, builds and undo.\n(also /fas start)")
+    AS.Theme.CloseTip(win:GetNamedChild("Close"))
 
     local place = AS.SV().window
     if type(place) == "table" and type(place.x) == "number" and type(place.y) == "number" then

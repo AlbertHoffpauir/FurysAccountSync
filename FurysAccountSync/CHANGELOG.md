@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.5.2
+- **One look across all of Fury's addons.** Every window now has the same header as the Guild Toolset: the name with its version, a **Start here** button right after it, the settings gear and the close button at the right, and a hover tip on each.
+- **New: Start here page** (the button in the window, or `/fas start`): how it works in one page, from picking the main account to undo.
+- The version moved from the line under the title into the title itself.
+- `/fas help` lists the commands one per line, like the other Fury addons.
+- The keybind is named "Open/close the window". The settings page links to the addon's ESOUI page.
+
 ## 0.5.1
 - HarvestMap's settings are now copied: which pins show on the map, compass and in the world, the filters, pin sizes and colors. It is on the "Which addons" list as Harvest_SavedVars. HarvestMap keeps them in its own layout, so before this they were never copied. It needs "account-wide settings" turned on in HarvestMap on the main, and the copy turns it on for the other accounts. The gathered pin locations are not touched; every account on the PC already shares those.
 

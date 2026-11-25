@@ -10,7 +10,7 @@
 FurysAccountSync = {
     name        = "FurysAccountSync",
     title       = "Fury's Account Sync",
-    version     = "0.5.1",
+    version     = "0.5.2",
     toolUrl     = "https://github.com/AlbertHoffpauir/FurysAccountSync",
     SCENE       = "FurysAccountSync_Scene",
 }
@@ -1104,7 +1104,7 @@ local function OnFirstActivation()
     -- One line, the first time an account logs in with this addon: how to open it.
     if firstTime then
         if not SV.main then
-            AS.Msg("New here? Type /fas to set it up in three steps. Everything starts turned off.")
+            AS.Msg("Welcome! Type /fas to set it up in three steps; its Start here button explains it in one page. Everything starts turned off.")
         elseif not AS.IsMain() and snap then
             AS.Msg(SV.main .. " has a setup this account can copy. Type /fas to see what would change. Nothing is copied until you say so.")
         elseif not AS.IsMain() then
@@ -1171,12 +1171,20 @@ local function Slash(arg)
         AS.Undo()
     elseif arg == "settings" then
         AS.OpenSettings()
+    elseif arg == "start" then
+        AS.ShowStart()
     elseif arg == "" then
         AS.ToggleWindow()
     else
         if arg ~= "help" then AS.Msg("\"/fas " .. arg .. "\" isn't a command.") end
-        AS.Msg("/fas opens the window. /fas snapshot takes a snapshot on the main. /fas apply copies the main's " ..
-            "snapshot to this character. /fas undo puts back this account's own addon settings, and /fas undo NAME just one addon's. /fas report makes a line to paste into a bug report. /fas settings opens the settings.")
+        AS.Msg(AS.title .. " v" .. AS.version .. " commands:")
+        AS.Msg("/fas  open the window (also on a key: Controls > Keybindings > Fury's Account Sync)")
+        AS.Msg("/fas start  the Start here page: how it works, in one page")
+        AS.Msg("/fas snapshot  take a snapshot on the main account")
+        AS.Msg("/fas apply  copy the main's snapshot to this character")
+        AS.Msg("/fas undo  put back this account's own addon settings; /fas undo NAME just one addon's")
+        AS.Msg("/fas report  make a line to paste into a bug report")
+        AS.Msg("/fas settings  open the settings")
     end
 end
 

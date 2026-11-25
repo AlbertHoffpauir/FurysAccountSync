@@ -5,7 +5,7 @@
 Make your other accounts on this PC match your main one: game settings, keybinds, chat look, addon settings
 and window layout, plus character builds you can load onto any character on any account.
 
-**Requires:** LibAddonMenu-2.0 (version 43 or newer).
+**Requires:** LibAddonMenu-2.0 (version 43 or newer). Install it separately; without it the addon will not load.
 
 Everything starts turned off. Nothing changes on any account until you turn it on there.
 
@@ -78,6 +78,7 @@ can undo.
 ## Commands
 
 - `/fas` open the window
+- `/fas start` the Start here page: how it works, in one page
 - `/fas snapshot` take a snapshot (main account)
 - `/fas apply` apply the main's snapshot to this character
 - `/fas undo` put back the addon settings and window layout the account had before it copied the main's
