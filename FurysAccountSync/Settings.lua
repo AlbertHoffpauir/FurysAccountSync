@@ -110,9 +110,8 @@ function AS.InitSettings()
     }
     controls[#controls + 1] = {
         type = "button", name = "Undo addon copies",
-        tooltip = "Puts back the addon settings and window layout this account had before it first copied the main's, then reloads the UI. They are kept for a month after that first copy.",
-        isDangerous = true,
-        warning = "This reloads the UI.",
+        tooltip = "Puts back the addon settings and window layout this account had before it first copied the main's, then reloads the UI after a pop-up that lets you cancel. They are kept for a month after that first copy.",
+        warning = "Asks first, then reloads the UI.",
         disabled = function() return AS.UndoInfo() == nil end,
         func = function() AS.Undo() end,
     }

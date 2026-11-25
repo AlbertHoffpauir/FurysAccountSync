@@ -10,7 +10,7 @@
 FurysAccountSync = {
     name        = "FurysAccountSync",
     title       = "Fury's Account Sync",
-    version     = "0.2.3",
+    version     = "0.2.4",
     toolUrl     = "https://github.com/AlbertHoffpauir/FurysAccountSync",
     SCENE       = "FurysAccountSync_Scene",
 }
@@ -518,17 +518,40 @@ local function KeyCalls(plan)
     return calls
 end
 
--- Reloads the UI so the addons and the base game read what was just copied into their saved data.
-local RELOAD_SECONDS = 3
+-- Nothing reloads the UI without asking (0.2.4, Albert): a pop-up says why, with a button
+-- to reload and Cancel. yes picks the dialog with that button text.
+local RELOAD_DIALOGS = { ["Reload now"] = "FURYSACCOUNTSYNC_RELOAD", ["Undo and reload"] = "FURYSACCOUNTSYNC_UNDO" }
+for yes, name in pairs(RELOAD_DIALOGS) do
+    ZO_Dialogs_RegisterCustomDialog(name, {
+        title = { text = "<<1>>" },
+        mainText = { text = "<<1>>" },
+        buttons = {
+            { text = yes, callback = function(dialog) dialog.data.onYes() end },
+            { text = SI_DIALOG_CANCEL, callback = function(dialog) if dialog.data.onNo then dialog.data.onNo() end end },
+        },
+    })
+end
 
+local function AskReload(title, text, yes, onYes, onNo)
+    ZO_Dialogs_ShowDialog(RELOAD_DIALOGS[yes], { onYes = onYes, onNo = onNo }, {
+        titleParams = { title },
+        mainTextParams = { text },
+    })
+end
+
+-- Asks to reload the UI so the addons and the base game read what was just copied into their saved data.
 local function ReloadSoon(rec, auto)
     if IsUnitInCombat("player") then
         AS.Msg("The addon settings are copied. Type /reloadui after the fight so they load.")
         return
     end
+    -- Set before asking, so the report also shows after a /reloadui you type later.
     rec.reloaded = auto and "auto" or "manual"
-    AS.Msg("Reloading the UI in " .. RELOAD_SECONDS .. " seconds so the copied addon settings load.")
-    zo_callLater(function() ReloadUI("ingame") end, RELOAD_SECONDS * 1000)
+    AskReload("Fury's Account Sync",
+        "The main account's addon settings are copied. They load after a UI reload (a few seconds).\n\nReload now? With Cancel they load at your next /reloadui or login. Until then the addons keep their old settings, and changes you make to those addon settings now are not kept.",
+        "Reload now",
+        function() ReloadUI("ingame") end,
+        function() AS.Msg("The copied addon settings load at your next /reloadui or login.") end)
 end
 
 local function FinishApply(snap, plan, finished, secondTry, auto)
@@ -683,13 +706,16 @@ function AS.Undo()
         return false
     end
     local since = AS.When(undo.time)
-    AS.UndoAddons()
-    local rec = AS.AccountRecord()
-    rec.report = nil
-    rec.reloaded = "undo"
-    AS.Msg("Putting back the addon settings and window layout this account had before " .. since ..
-        ". Reloading the UI in " .. RELOAD_SECONDS .. " seconds.")
-    zo_callLater(function() ReloadUI("ingame") end, RELOAD_SECONDS * 1000)
+    AskReload("Undo addon copies",
+        "Put back the addon settings and window layout this account had before " .. since .. "?\n\nThis reloads the UI (a few seconds).",
+        "Undo and reload",
+        function()
+            AS.UndoAddons()
+            local rec = AS.AccountRecord()
+            rec.report = nil
+            rec.reloaded = "undo"
+            ReloadUI("ingame")
+        end)
     return true
 end
 

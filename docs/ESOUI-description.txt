@@ -55,7 +55,7 @@ Graphics and sound aren't copied because every account on the same PC already sh
 [SIZE="4"][FONT="Georgia"][COLOR="#5CC2FF"][B]Addon settings[/B][/COLOR][/FONT][/SIZE]
 [COLOR="#B4B0D8"][I]Tick "Addon settings" under What to copy. Starts turned off.[/I][/COLOR]
 [LIST]
-[*]Every addon's saved data holds a section for each account on the PC. Apply copies the main's section to the account you're on and then reloads the UI, which is what makes the addons load it.
+[*]Every addon's saved data holds a section for each account on the PC. Apply copies the main's section to the account you're on and then asks to reload the UI, which is what makes the addons load it. With Cancel they load at your next reload or login.
 [*][B]Settings addons[/B] are copied whole: Bandits User Interface, Fancy Action Bar+, Combat Metrics, Hodor Reflexes, Raid Notifier, Crutch Alerts, Perfect Pixel, Personal Assistant, Auto Category, Advanced Filters, WritWorthy and many more.
 [*][B]Addons that mix settings and data[/B] keep their data: pChat keeps its chat history, Tamriel Trade Centre its prices, Wizard's Wardrobe its account storage, Dolgubon's Lazy Writ Crafter its reward stats, Beam Me Up its counters.
 [*][B]Data addons are never touched:[/B] Character Knowledge, Inventory Insight, CraftStore, HarvestMap, LibHistoire, Awesome Guild Store, Leo's Altholic, Furniture Catalogue, FCO ItemSaver, fight logs and the like.
@@ -115,7 +115,7 @@ Only when the main has a newer snapshot and copying is turned on for that accoun
 Each client writes its saved data at logout or /reloadui, and the one that saves last wins. Take the snapshot and log the main out before the other client logs in.
 
 [B]Why does the UI reload after Apply?[/B]
-Addons read their settings when the UI loads. The reload only happens when addon settings or window layout were copied.
+Addons read their settings when the UI loads. The reload only happens when addon settings or window layout were copied, and a pop-up asks first, so you can cancel and reload later.
 
 
 [SIZE="4"][FONT="Georgia"][COLOR="#5CC2FF"][B]Bugs, ideas and source[/B][/COLOR][/FONT][/SIZE]

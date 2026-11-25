@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.4
+- Nothing reloads the UI without asking. After Apply copies addon settings or window layout (also with "Automatically when I log in"), a pop-up asks to reload, with Reload now and Cancel. With Cancel, the copied settings load at your next /reloadui or login.
+- Undo addon copies (and `/fas undo`) asks first too, and changes nothing if you cancel.
+
 ## 0.2.3
 - The game language is never copied between accounts. This also clears a note from the ESOUI addon check.
 

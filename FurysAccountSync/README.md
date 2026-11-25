@@ -38,7 +38,7 @@ main it undoes the copy, so this addon copies nothing there while it is active a
 
 Graphics and sound aren't copied because every account on the same PC already shares them.
 
-Copying addon settings or window layout ends with a UI reload, which is what makes the addons load them. The
+Copying addon settings or window layout ends with a UI reload, which is what makes the addons load them. A pop-up asks first; with Cancel they load at your next reload or login. The
 main's addon settings are read from its saved data, which the game writes when the main logs out or reloads
 the UI. **Undo addon copies** in the settings (or `/fas undo`) puts back the addon settings the account had
 before it first copied, for a month. With **Automatically**, addon settings are copied once per account for each
