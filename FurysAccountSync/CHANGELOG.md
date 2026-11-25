@@ -1,5 +1,42 @@
 # Changelog
 
+## 0.5.1
+- HarvestMap's settings are now copied: which pins show on the map, compass and in the world, the filters, pin sizes and colors. It is on the "Which addons" list as Harvest_SavedVars. HarvestMap keeps them in its own layout, so before this they were never copied. It needs "account-wide settings" turned on in HarvestMap on the main, and the copy turns it on for the other accounts. The gathered pin locations are not touched; every account on the PC already shares those.
+
+## 0.5.0
+Copying addon settings is now done with care, a few addons at a time.
+- "Which addons" in the settings has a tickbox for every addon on the list. On a new install only a small set of well-known addons is ticked. Tick more one at a time: copy, check that addon in game, then tick the next. An install that already copied addon settings keeps every addon ticked.
+- The list of changes says how many listed addons are running but not ticked.
+- "Undo one addon" in the settings (or `/fas undo NAME`) puts back just that addon's own settings and unticks it. Every other addon stays copied. A pop-up asks before the reload.
+- "Make a report line" in the settings (or `/fas report`) gives one line to copy into a comment when something goes wrong: the version, what is ticked, which addons were copied and how the last copy went. It holds no account or character names.
+
+## 0.4.2
+- A clear warning wherever addon settings are copied: it can break an addon, so copy with care, check your addons afterwards and use "Undo addon copies" if one misbehaves. It shows in the settings, in the list of changes and in the reload pop-up.
+
+## 0.4.1
+- Urich's Skill Point Finder is never copied. Copying its settings stopped it from working. If it broke on an account, "Undo addon copies" in the settings puts its own settings back.
+
+## 0.4.0
+- Builds keep gear. Save build stores the armor, jewelry and weapons the character wears, and a **Gear** tickbox next to Load build puts them on from the bag. A piece of the same item, trait and quality counts. What isn't in the bag is listed. Starts turned off. Builds saved before this version hold no gear until you save them again.
+- Share a build as text. **Show as text** puts the chosen build into a box as one line to copy with Ctrl+C. **Add from text** adds a build you pasted there. It never replaces a build.
+- On the main, the window lists your other accounts: how many characters have the current snapshot, which accounts are behind, and what each does at login.
+- With "Addon settings" ticked, the list of changes now names the running addons that aren't on the built-in list, so it is plain what was left out.
+- New settings section "Addons that aren't on the list": add an addon by its saved-data name and it is copied with the others. Everything that addon keeps for the whole account is copied, so only add addons that hold settings. Starts empty.
+
+## 0.3.0
+Easier first setup. Nothing changes for accounts that are already set up.
+- The window shows the setup as three numbered steps, each marked Done, Next or Later, until the account is set up.
+- The first button does what the account needs: **Make this account the main** while there is no main, **Take snapshot** on the main, and **At login: Off / Ask me / Automatic** on every other account. Before, both of those were only in the settings.
+- A greyed-out button says why when you hover it.
+- On the main, the window says how many things changed since the snapshot and lists them, so you know when to take a new one.
+- Changing the main account asks first. The old main's snapshot is removed, because it describes the old main.
+- The list of changes reads "Off > On" for tickbox settings and uses the game's own words for choices, where the game has them.
+- Save build asks before it replaces a build with the same name.
+- The first time an account logs in with the addon, one chat line says how to open it.
+- `/fas help` lists the commands, and a mistyped command shows that list.
+- The window opens where you last left it.
+- Settings page: "Open the window" is at the top, and greyed-out options say why.
+
 ## 0.2.4
 - Nothing reloads the UI without asking. After Apply copies addon settings or window layout (also with "Automatically when I log in"), a pop-up asks to reload, with Reload now and Cancel. With Cancel, the copied settings load at your next /reloadui or login.
 - Undo addon copies (and `/fas undo`) asks first too, and changes nothing if you cancel.

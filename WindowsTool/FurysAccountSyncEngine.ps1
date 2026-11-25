@@ -384,7 +384,7 @@ $script:Rules = @{
     'ResearchAssistant_Settings_Server'             = @{ kind = 'except'; keep = @('acquiredTraits', 'blacksmithCharacter', 'clothierCharacter', 'leatherworkerCharacter', 'weaponsmithCharacter', 'woodworkingCharacter', 'jewelryCraftingCharacter') }
     'SkillLinesSavedVars'                           = @{ kind = 'except'; keep = @('NA Megaserver', 'EU Megaserver') }
     'TamrielTradeCentreVars'                        = @{ kind = 'except'; keep = @('NAData', 'EUData') }
-    'USPF_Settings'                                 = @{ kind = 'except'; keep = @('ptsData', 'charInfo') }
+    'USPF_Settings'                                 = @{ kind = 'data' }
     'WizardsWardrobeSV'                             = @{ kind = 'except'; keep = @('accountWideStorage') }
     'XLGearBankerSavedVariables'                    = @{ kind = 'except'; keep = @('gearSetList', 'pages', 'displayingSet', 'displayingPage') }
 
@@ -406,7 +406,7 @@ $script:Rules = @{
     'FuryGTT_SV'                                    = @{ kind = 'data' }
     'FurysGuildCrier_SV'                            = @{ kind = 'data' }
     'FurysInventoryLedger_SV'                       = @{ kind = 'data' }
-    'Harvest_SavedVars'                             = @{ kind = 'data' }
+    'Harvest_SavedVars'                             = @{ kind = 'settings'; layout = 'harvest' }
     'IIFA_DATABASE'                                 = @{ kind = 'data' }
     'LeoAltholicSavedVariables'                     = @{ kind = 'data' }
     'LibCharacterKnowledgeData'                     = @{ kind = 'data' }
@@ -536,7 +536,7 @@ function Get-FasInventory([string]$savedVars) {
                     Name         = $name
                     Rule         = (Get-Rule $name)
                     PerAccount   = ($map.Accounts.Count -gt 0)
-                    Wide         = $map.Wide
+                    Wide         = ($map.Wide -or [bool](Get-Rule $name).layout)
                     PerCharacter = $map.PerCharacter
                 }
             }
@@ -652,6 +652,31 @@ function New-FasPlan($inventory, $options) {
             $rule = Get-Rule $varName
             if ($rule.kind -eq 'data' -or $rule.kind -eq 'own') { continue }
             if ($rule.kind -eq 'unknown' -and $fileKind -ne 'unknown') { continue }
+            if ($rule.layout -eq 'harvest') {
+                # HarvestMap's own layout: account.<name without @>. It only uses these settings when
+                # its "account-wide settings" option is on, so nothing is copied while the main has it off.
+                $acctTable = $root.Get('"account"')
+                if (-not $acctTable -or -not $acctTable.IsTable) { continue }
+                $mainNode = $acctTable.Get((Q $options.Main.TrimStart('@')))
+                if (-not $mainNode -or -not $mainNode.IsTable) { continue }
+                $wideFlag = $mainNode.Get('"accountWideSettings"')
+                if (-not $wideFlag -or $wideFlag.IsTable -or $wideFlag.Raw.Trim() -ne 'true') { continue }
+                foreach ($alt in $options.Alts) {
+                    $altKey = Q $alt.TrimStart('@')
+                    $altNode = $acctTable.Get($altKey)
+                    if ([FuryAS.Sv]::Same($mainNode, $altNode)) { continue }
+                    $diff = 0
+                    foreach ($k in $mainNode.Keys) {
+                        $old = if ($altNode -and $altNode.IsTable) { $altNode.Get($k) } else { $null }
+                        if (-not [FuryAS.Sv]::Same($mainNode.Get($k), $old)) { $diff++ }
+                    }
+                    $created = (-not $altNode)
+                    $acctTable.Set($altKey, $mainNode.Clone())
+                    $note = if ($created) { 'added' } elseif ($diff -eq 1) { '1 part changed' } else { "$diff parts changed" }
+                    $changes.Add("${alt}: $note")
+                }
+                continue
+            }
             $keep = @()
             if ($rule.keep) { $keep = @($rule.keep | ForEach-Object { Q $_ }) }
 
@@ -721,10 +746,31 @@ function New-FasBackup($paths, [string]$label = '') {
     $name = "SavedVariables $stamp$label.zip"
     $zip = Join-Path $paths.Backups $name
     [System.IO.Compression.ZipFile]::CreateFromDirectory($paths.SavedVars, $zip, [System.IO.Compression.CompressionLevel]::Optimal, $false)
-    # keep the newest 10
-    Get-ChildItem -LiteralPath $paths.Backups -Filter 'SavedVariables *.zip' | Sort-Object LastWriteTime -Descending |
-        Select-Object -Skip 10 | Remove-Item -Force
+    # Keep the newest 10 and, always, the oldest one: the first backup is the only copy of the files
+    # as they were before this tool ever changed them.
+    $allBackups = @(Get-ChildItem -LiteralPath $paths.Backups -Filter 'SavedVariables *.zip' | Sort-Object LastWriteTime -Descending)
+    if ($allBackups.Count -gt 11) {
+        for ($b = 10; $b -le ($allBackups.Count - 2); $b++) { Remove-Item -LiteralPath $allBackups[$b].FullName -Force }
+    }
     return $zip
+}
+
+# Puts one saved file back from a backup. Returns $true when the backup held that file.
+function Restore-FasBackupFile($paths, [string]$zip, [string]$fileName) {
+    Add-Type -AssemblyName System.IO.Compression.FileSystem
+    $archive = [System.IO.Compression.ZipFile]::OpenRead($zip)
+    $found = $false
+    try {
+        foreach ($e in $archive.Entries) {
+            if ($e.FullName -eq $fileName) {
+                [System.IO.Compression.ZipFileExtensions]::ExtractToFile($e, (Join-Path $paths.SavedVars $fileName), $true)
+                $found = $true
+            }
+        }
+    } finally {
+        $archive.Dispose()
+    }
+    return $found
 }
 
 function Get-FasBackups($paths) {

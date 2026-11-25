@@ -15,7 +15,7 @@
 param([string]$Live, [string]$SelfTest, [switch]$KeepConsole, [switch]$Launch, [switch]$Detached)
 
 $ErrorActionPreference = 'Stop'
-$toolVersion = '0.1.9'
+$toolVersion = '0.2.1'
 
 # Anything that goes wrong while the window is being built is shown instead of the window just closing.
 # Started by the .cmd file: start this script again in a process of its own with no console window,
@@ -113,11 +113,14 @@ $form.Controls.Add($mainBox)
 # alts
 $form.Controls.Add((New-Label 'Copy to these accounts:' 20 108 260 24 $col.Blue $fontBold))
 $altList = New-Object System.Windows.Forms.CheckedListBox
-$altList.Left = 20; $altList.Top = 134; $altList.Width = 260; $altList.Height = 250
+$altList.Left = 20; $altList.Top = 134; $altList.Width = 260; $altList.Height = 212
 $altList.CheckOnClick = $true; $altList.BackColor = $col.Void; $altList.ForeColor = $col.Text
 $altList.BorderStyle = [System.Windows.Forms.BorderStyle]::FixedSingle
 $tip.SetToolTip($altList, 'Tick the accounts that should copy the main. Accounts that have never logged in with an addon still get its settings.')
 $form.Controls.Add($altList)
+$btnAllAlts = New-Button 'Tick all' 20 352 126 'Ticks every account in the list above.'
+$btnNoAlts  = New-Button 'Tick none' 154 352 126 'Unticks every account in the list above.'
+$form.Controls.Add($btnAllAlts); $form.Controls.Add($btnNoAlts)
 
 # base game
 $form.Controls.Add((New-Label 'Base game (per character):' 20 400 260 24 $col.Blue $fontBold))
@@ -139,7 +142,8 @@ $note = New-Label ("Game settings, keybinds and chat colors are copied in game b
 $form.Controls.Add($note)
 
 # addons
-$form.Controls.Add((New-Label 'Addons:' 300 108 300 24 $col.Blue $fontBold))
+$form.Controls.Add((New-Label 'Addons:' 300 108 70 24 $col.Blue $fontBold))
+$form.Controls.Add((New-Label 'Warning: copying addon settings can break an addon. Tick with care and keep the backup.' 372 108 608 24 $col.Bad $fontBold))
 $list = New-Object System.Windows.Forms.ListView
 $list.Left = 300; $list.Top = 134; $list.Width = 680; $list.Height = 440
 $list.View = [System.Windows.Forms.View]::Details; $list.CheckBoxes = $true; $list.FullRowSelect = $true
@@ -153,15 +157,22 @@ $form.Controls.Add($list)
 
 $btnAllAddons = New-Button 'Tick all settings' 300 582 160 'Ticks every addon whose settings can be copied.'
 $btnNoAddons  = New-Button 'Tick none' 468 582 110 'Unticks every addon.'
-$form.Controls.Add($btnAllAddons); $form.Controls.Add($btnNoAddons)
+$btnRestoreOne = New-Button 'Restore the selected addon from a backup...' 586 582 394 'Click an addon in the list so its row is highlighted, then press this. It puts only that addon''s saved file back from a backup you pick. Every other addon stays as it is.'
+$form.Controls.Add($btnAllAddons); $form.Controls.Add($btnNoAddons); $form.Controls.Add($btnRestoreOne)
+
+# On the very first start only these well-known addons are ticked. The rest can be ticked a few at a time.
+$starterFiles = @('BanditsUserInterface.lua', 'FancyActionBar+.lua', 'CombatMetrics.lua', 'HodorReflexes.lua', 'CrutchAlerts.lua',
+    'RaidNotifier.lua', 'PerfectPixel.lua', 'AdvancedFilters.lua', 'AutoCategory.lua', 'OdySupportIcons.lua', 'CombatMetronome.lua',
+    'PersonalAssistant.lua', 'PersonalAssistantBanking.lua', 'PersonalAssistantConsume.lua', 'PersonalAssistantIntegration.lua',
+    'PersonalAssistantJunk.lua', 'PersonalAssistantLoot.lua', 'PersonalAssistantRepair.lua', 'PersonalAssistantWorker.lua')
 
 # actions
 $btnPreview = New-Button 'Preview' 20 630 140 'Works out exactly what would change. Nothing is written.'
-$btnApply   = New-Button 'Apply' 168 630 140 'Backs up the whole SavedVariables folder, then writes the changes shown in the preview.'
+$btnApply   = New-Button 'Apply' 168 630 140 'Backs up the whole SavedVariables folder, then writes the changes shown in the preview. Press Preview first.'
 $btnRestore = New-Button 'Restore a backup...' 316 630 190 'Puts every saved file back the way it was in a backup. Your current files are backed up first.'
 $btnFolder  = New-Button 'Open backups folder' 514 630 190 'Opens the folder that holds the backups.'
-$btnApply.Enabled = $false
-$form.Controls.AddRange(@($btnPreview, $btnApply, $btnRestore, $btnFolder))
+$btnHowTo   = New-Button 'How it works' 712 630 268 'Shows the steps in order: pick the main, tick accounts, Preview, Apply.'
+$form.Controls.AddRange(@($btnPreview, $btnApply, $btnRestore, $btnFolder, $btnHowTo))
 
 $logBox = New-Object System.Windows.Forms.TextBox
 $logBox.Left = 20; $logBox.Top = 674; $logBox.Width = 960; $logBox.Height = 94
@@ -173,6 +184,18 @@ $form.Controls.Add($logBox)
 # Every line also goes into a text file next to this script, so nothing is lost when the window closes.
 $script:logFile = Join-Path $PSScriptRoot 'FurysAccountSync-log.txt'
 $script:logFileOk = $true
+# The log file keeps its newest 500 lines once it passes 200 KB, so it can't grow for ever.
+if (-not $script:testing) {
+    try {
+        if ((Test-Path -LiteralPath $script:logFile) -and ((Get-Item -LiteralPath $script:logFile).Length -gt 204800)) {
+            $oldLines = [System.IO.File]::ReadAllLines($script:logFile)
+            $newest = [string[]]@($oldLines | Select-Object -Last 500)
+            [System.IO.File]::WriteAllLines($script:logFile, $newest)
+        }
+    } catch {
+        $script:logFileOk = $true
+    }
+}
 function Log([string]$text) {
     $stamped = (Get-Date -Format 'HH:mm:ss') + '  ' + $text
     $script:logLines.Add($stamped)
@@ -192,6 +215,38 @@ function Show-Problem([string]$text) {
     if (-not $script:testing) {
         [System.Windows.Forms.MessageBox]::Show($text, "Fury's Account Sync", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Warning) | Out-Null
     }
+}
+
+# A hint (nothing ticked, game still running) is shown in a message too, for the same reason.
+function Show-Info([string]$text) {
+    Log $text
+    if (-not $script:testing) {
+        [System.Windows.Forms.MessageBox]::Show($text, "Fury's Account Sync", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information) | Out-Null
+    }
+}
+
+$howToText = @(
+    "How it works",
+    "",
+    "1. Play on your main account until everything looks right, then close the game completely.",
+    "2. 'Copy from' at the top is your main account. Its own files are never changed.",
+    "3. Tick the accounts to copy to, on the left.",
+    "4. Look over the addon list. On the first start only a small set of well-known addons is ticked. Tick more a few at a time and check them in game. White rows are settings and are copied. Grey rows are data (inventories, history and the like) and are never copied. Yellow rows are addons this tool doesn't know: tick one only if you know it holds settings.",
+    "5. Press Preview. It shows what would change. Nothing is written.",
+    "",
+    "WARNING: copying addon settings can break an addon. Some addons keep things that belong to one account or one character in with their settings. Copy with care: untick anything you are unsure about, check your addons in game afterwards, and use 'Restore a backup...' if one misbehaves.",
+    "",
+    "6. Press Apply. The whole SavedVariables folder is backed up first.",
+    "7. Log in on each account.",
+    "",
+    "To undo, press 'Restore a backup...' and pick the backup from before.",
+    "",
+    "Game settings, keybinds and chat colors are copied in game, by the Fury's Account Sync addon (/fas)."
+) -join "`n"
+
+function Show-HowTo {
+    if ($script:testing) { return }
+    [System.Windows.Forms.MessageBox]::Show($howToText, "Fury's Account Sync - How it works", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information) | Out-Null
 }
 
 # Runs one button's work. If anything goes wrong the reason goes in the log instead of being lost.
@@ -224,7 +279,6 @@ function Update-GameStatus {
 
 function Invalidate-Plan {
     $script:plan = $null
-    $btnApply.Enabled = $false
     foreach ($item in $list.Items) { $item.SubItems[2].Text = '' }
 }
 
@@ -311,8 +365,8 @@ function Load-Folder {
             if ($stripe) { $item.BackColor = $col.Stripe } else { $item.BackColor = $col.Void }
             $stripe = -not $stripe
             switch ($kind) {
-                'settings' { $item.ForeColor = $col.Text;  $item.Checked = -not ($unticked -contains $f.Sv.Name) }
-                'except'   { $item.ForeColor = $col.Text;  $item.Checked = -not ($unticked -contains $f.Sv.Name) }
+                'settings' { $item.ForeColor = $col.Text;  if ($saved) { $item.Checked = -not ($unticked -contains $f.Sv.Name) } else { $item.Checked = ($starterFiles -contains $f.Sv.Name) } }
+                'except'   { $item.ForeColor = $col.Text;  if ($saved) { $item.Checked = -not ($unticked -contains $f.Sv.Name) } else { $item.Checked = ($starterFiles -contains $f.Sv.Name) } }
                 'unknown'  { $item.ForeColor = $col.Warn;  $item.Checked = ($tickedUnknown -contains $f.Sv.Name) }
                 default    { $item.ForeColor = $col.Muted; $item.Checked = $false }
             }
@@ -351,12 +405,12 @@ function Show-PreviewResult([string]$text) {
 function Do-Preview([switch]$Quiet) {
     Invalidate-Plan
     $alts = @(Get-TickedAlts)
-    if (-not $mainBox.SelectedItem) { Log 'Pick your main account first.'; return }
-    if ($alts.Count -eq 0) { Log 'Tick at least one account to copy to.'; return }
+    if (-not $mainBox.SelectedItem) { Show-Info "Pick your main account in 'Copy from' first."; return }
+    if ($alts.Count -eq 0) { Show-Info "Tick at least one account under 'Copy to these accounts' first."; return }
     $baseFrom = $null
     if ($baseCheck.Checked -and $charBox.SelectedItem) { $baseFrom = [string]$charBox.SelectedItem }
     $files = @(Get-TickedFiles)
-    if ($files.Count -eq 0 -and -not $baseFrom) { Log 'Tick at least one addon, or the chat window, meters and quest tracker box.'; return }
+    if ($files.Count -eq 0 -and -not $baseFrom) { Show-Info 'Tick at least one addon, or the chat window, meters and quest tracker box.'; return }
 
     $form.Cursor = $cursorWait
     # Read the folder again so the preview matches the files as they are right now.
@@ -391,7 +445,6 @@ function Do-Preview([switch]$Quiet) {
         Log ("   {0}: {1}" -f $p.Name, $text)
     }
     $script:plan = $plan
-    $btnApply.Enabled = $true
     if (-not $Quiet) {
         $acctWord = 'accounts'
         if ($alts.Count -eq 1) { $acctWord = 'account' }
@@ -410,10 +463,10 @@ function Do-Preview([switch]$Quiet) {
 }
 
 function Do-Apply {
-    if (-not $script:plan) { return }
-    if (-not (Update-GameStatus)) { Log 'Close the game completely first.'; return }
+    if (-not $script:plan) { Show-Info 'Press Preview first. It works out what would change, and Apply then writes exactly that. Ticking or unticking anything after a preview needs a new preview.'; return }
+    if (-not (Update-GameStatus)) { Show-Info 'The game is running. Close it completely first, then press Apply again.'; return }
     $answer = [System.Windows.Forms.MessageBox]::Show(
-        ("Change {0} saved files for {1}?`n`nThe whole SavedVariables folder is backed up first, and Restore a backup puts it back." -f $script:plan.Count, (@(Get-TickedAlts) -join ', ')),
+        ("Change {0} saved files for {1}?`n`nWARNING: copying addon settings can break an addon. Check your addons in game afterwards.`n`nThe whole SavedVariables folder is backed up first, and Restore a backup puts it back." -f $script:plan.Count, (@(Get-TickedAlts) -join ', ')),
         "Fury's Account Sync", [System.Windows.Forms.MessageBoxButtons]::OKCancel, [System.Windows.Forms.MessageBoxIcon]::Question)
     if ($answer -ne [System.Windows.Forms.DialogResult]::OK) { return }
     $form.Cursor = $cursorWait
@@ -428,9 +481,9 @@ function Do-Apply {
 }
 
 function Do-Restore {
-    if (-not (Update-GameStatus)) { Log 'Close the game completely first.'; return }
+    if (-not (Update-GameStatus)) { Show-Info 'The game is running. Close it completely first, then try again.'; return }
     $backups = @(Get-FasBackups $paths)
-    if ($backups.Count -eq 0) { Log 'There are no backups yet.'; return }
+    if ($backups.Count -eq 0) { Show-Info 'There are no backups yet. A backup is made every time you press Apply.'; return }
     $dlg = New-Object System.Windows.Forms.OpenFileDialog
     $dlg.InitialDirectory = $paths.Backups
     $dlg.Filter = 'Backups (*.zip)|*.zip'
@@ -452,6 +505,35 @@ function Do-Restore {
     }
     $form.Cursor = $cursorNormal
     Log "Restored $([IO.Path]::GetFileName($dlg.FileName))."
+    Load-Folder
+}
+
+function Do-RestoreOne {
+    if (-not (Update-GameStatus)) { Show-Info 'The game is running. Close it completely first, then try again.'; return }
+    if ($list.SelectedItems.Count -eq 0) { Show-Info 'Click the addon in the list first, so its row is highlighted. Then press this button again.'; return }
+    $fileName = [string]$list.SelectedItems[0].Text
+    $backups = @(Get-FasBackups $paths)
+    if ($backups.Count -eq 0) { Show-Info 'There are no backups yet. A backup is made every time you press Apply.'; return }
+    $dlg = New-Object System.Windows.Forms.OpenFileDialog
+    $dlg.InitialDirectory = $paths.Backups
+    $dlg.Filter = 'Backups (*.zip)|*.zip'
+    $dlg.Title = "Pick the backup to take $fileName from"
+    if ($dlg.ShowDialog() -ne [System.Windows.Forms.DialogResult]::OK) { return }
+    $answer = [System.Windows.Forms.MessageBox]::Show(
+        "Put $fileName back the way it was in:`n$([IO.Path]::GetFileName($dlg.FileName))`n`nThis is that addon's whole saved file, for every account, settings and data. Anything it saved after that backup is lost. Every other addon stays as it is. Your files as they are now are backed up first.",
+        "Fury's Account Sync", [System.Windows.Forms.MessageBoxButtons]::OKCancel, [System.Windows.Forms.MessageBoxIcon]::Warning)
+    if ($answer -ne [System.Windows.Forms.DialogResult]::OK) { return }
+    $form.Cursor = $cursorWait
+    $now = New-FasBackup $paths ' before restore'
+    Log "Backed up the current files to $now"
+    $found = Restore-FasBackupFile $paths $dlg.FileName $fileName
+    $form.Cursor = $cursorNormal
+    if ($found) {
+        Log "Restored $fileName from $([IO.Path]::GetFileName($dlg.FileName))."
+        Show-Info "$fileName is back the way it was in that backup. Untick it before the next Apply if it should stay that way."
+    } else {
+        Show-Info "That backup doesn't hold $fileName. Nothing was changed."
+    }
     Load-Folder
 }
 
@@ -487,6 +569,10 @@ $btnAllAddons.Add_Click({
     }
 })
 $btnNoAddons.Add_Click({ Guard { foreach ($item in $list.Items) { $item.Checked = $false } } })
+$btnAllAlts.Add_Click({ Guard { for ($i = 0; $i -lt $altList.Items.Count; $i++) { $altList.SetItemChecked($i, $true) } } })
+$btnNoAlts.Add_Click({ Guard { for ($i = 0; $i -lt $altList.Items.Count; $i++) { $altList.SetItemChecked($i, $false) } } })
+$btnHowTo.Add_Click({ Guard { Show-HowTo } })
+$btnRestoreOne.Add_Click({ Guard { Do-RestoreOne } })
 $btnPreview.Add_Click({ Guard { Do-Preview } })
 $btnApply.Add_Click({ Guard { Do-Apply } })
 $btnRestore.Add_Click({ Guard { Do-Restore } })
@@ -510,6 +596,8 @@ $form.Add_Shown({
         [void](Update-GameStatus)
         Load-Folder
         Log 'Tick the accounts to copy to and the addons to copy, then press Preview.'
+        # First start (no remembered choices yet): show the steps once.
+        if (-not $script:choices) { Show-HowTo }
     }
 })
 $form.Add_FormClosing({ $timer.Stop() })
@@ -542,8 +630,8 @@ if ($script:testing) {
                 Do-Preview -Quiet
                 $planned = 0
                 if ($script:plan) { $planned = @($script:plan).Count }
-                Log ("SELF TEST: {0} files ticked; preview for {1}: {2} files would change; Apply button on: {3}" -f `
-                    $tickedBefore, $altList.Items[0], $planned, $btnApply.Enabled)
+                Log ("SELF TEST: {0} files ticked; preview for {1}: {2} files would change; Apply ready: {3}" -f `
+                    $tickedBefore, $altList.Items[0], $planned, ($planned -gt 0))
                 [System.Windows.Forms.Application]::DoEvents()
                 if (-not (Test-Path -LiteralPath $SelfTest)) { New-Item -ItemType Directory -Path $SelfTest | Out-Null }
                 $bmp = New-Object System.Drawing.Bitmap($form.Width, $form.Height)
@@ -573,6 +661,13 @@ if ($Detached) {
     $first.Show()
     $first.Close()
     $first.Dispose()
+}
+# A screen shorter than the window (a 1366 x 768 laptop): the window takes the screen's height and scrolls.
+$screenHeight = [System.Windows.Forms.Screen]::PrimaryScreen.WorkingArea.Height
+if ($form.Height -gt $screenHeight) {
+    $form.AutoScroll = $true
+    $barWidth = [System.Windows.Forms.SystemInformation]::VerticalScrollBarWidth
+    $form.ClientSize = New-Object System.Drawing.Size((1000 + $barWidth), ($screenHeight - 40))
 }
 [void]$form.ShowDialog()
 

@@ -5,6 +5,12 @@ AI disclosure: This tool's code was written with the assistance of an AI coding 
 Anthropic), working from my designs and instructions. I test every release on my own accounts before it
 goes up, and I maintain it. Please report any problem in the comments on ESOUI or on GitHub.
 
+WARNING
+-------
+Copying addon settings can break an addon. Some addons keep things that belong to one account or one
+character in with their settings. Copy with care: untick anything you are unsure about, check your addons
+in game afterwards, and use "Restore a backup..." if one misbehaves.
+
 What it does
 ------------
 Makes your other ESO accounts on this PC match your main one:
@@ -17,7 +23,7 @@ also copy addon settings in game, for addons that are turned on for the account.
 addon in the folder, turned on or not, and makes a full backup first.
 Graphics and sound are already the same for every account on one PC.
 
-Version 0.1.9
+Version 0.2.1
 
 Where to put it
 ---------------
@@ -29,12 +35,15 @@ How to use it
 -------------
 1. Play on your main account until everything looks right, then close the game completely.
 2. Double-click "Fury's Account Sync.cmd".
+   The first time, a message lists these steps. "How it works" shows it again.
 3. Pick your main account, tick the accounts to copy to, and check the addon list.
 4. Press Preview. It lists exactly what would change. Nothing is written yet.
 5. Press Apply. It backs up the whole SavedVariables folder first, then writes the changes.
 6. Log in on each account.
 
 Undo: press "Restore a backup..." and pick a backup. Your current files are backed up before it restores.
+Undo for one addon: click the addon in the list, then press "Restore the selected addon from a backup...".
+The first time, only a small set of well-known addons is ticked. Tick more a few at a time.
 
 What it never does
 ------------------
@@ -48,7 +57,7 @@ What it never does
 Files it reads and writes
 -------------------------
   - Reads and writes:  Documents\Elder Scrolls Online\live\SavedVariables\*.lua
-  - Writes backups to: Documents\Elder Scrolls Online\Fury's Account Sync Backups\ (keeps the newest 10)
+  - Writes backups to: Documents\Elder Scrolls Online\Fury's Account Sync Backups\ (keeps the newest 10 and the very first)
   - Remembers your choices in: Documents\Elder Scrolls Online\Fury's Account Sync choices.json
 
 A file is only changed if the tool can read it and write it back byte for byte. Every changed file is read
@@ -70,6 +79,22 @@ To keep the black window showing all the time, run
 
 Changes
 -------
+0.2.1  HarvestMap's settings are copied (which pins show, filters, sizes and colors). It keeps them in
+       its own layout, so before this it was listed as data. It needs "account-wide settings" turned
+       on in HarvestMap on the main. The gathered pin locations are not touched.
+0.2.0  Copy with care, a few addons at a time. On the first start only a small set of well-known addons
+       is ticked. "Restore the selected addon from a backup..." puts one addon's saved file back and
+       leaves every other addon alone. The first backup ever made is never deleted: it is the only copy
+       of your files from before the tool changed anything. (The newest 10 are still kept as well.)
+0.1.12 A clear warning in the window, in "How it works" and before Apply: copying addon settings can
+       break an addon.
+0.1.11 Urich's Skill Point Finder is never copied. Copying its settings stopped it from working.
+0.1.10 Easier first use. The first start shows the steps, and "How it works" shows them again. Hints
+       such as "tick an account first" or "close the game first" open as a message instead of only
+       appearing in the box at the bottom. Apply can always be pressed and says when a preview is
+       needed first. "Tick all" and "Tick none" under the account list. On a screen shorter than the
+       window, the window fits the screen and scrolls. The log file keeps its newest 500 lines once it
+       passes 200 KB.
 0.1.9  Preview now opens a summary of what would change.
 0.1.8  Reads the saved files the game now writes without spaces or line breaks. Before, those showed
        as "layout is unusual" and the character list was empty.

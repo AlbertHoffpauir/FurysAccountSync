@@ -10,7 +10,7 @@
 FurysAccountSync = {
     name        = "FurysAccountSync",
     title       = "Fury's Account Sync",
-    version     = "0.2.4",
+    version     = "0.5.1",
     toolUrl     = "https://github.com/AlbertHoffpauir/FurysAccountSync",
     SCENE       = "FurysAccountSync_Scene",
 }
@@ -56,6 +56,8 @@ local function Defaults()
                                 --                  addonsAt = snapshot time addon settings were copied for }
         undo         = {},      -- ["@Account"] = the addon settings the account had before copying, see AddonCopy.lua
         builds       = {},      -- ["Build name"] = build, see Builds.lua
+        extra        = {},      -- ["SavedVariableName"] = true: addons the player added to the copy list
+        pick         = {},      -- ["SavedVariableName"] = true / false: the player's tick for that addon, see Rules.lua
         what         = {        -- what an alt takes from the snapshot
             keybinds = true,
             chat     = true,
@@ -66,7 +68,7 @@ local function Defaults()
         },
         autoSnapshot = false,   -- main takes a fresh snapshot at every logout, reload and zone change
         builds_on    = false,   -- Character builds section
-        buildParts   = { skills = true, cp = true, quick = true },   -- what Load build puts on the character
+        buildParts   = { skills = true, cp = true, quick = true, gear = false },   -- what Load build puts on the character
     }
 end
 
@@ -164,7 +166,7 @@ local function ForEachSetting(panel, fn)
                     local language = (s == SETTING_TYPE_UI and i == UI_SETTING_TEXT_LANGUAGE)
                                   or s == SETTING_TYPE_LANGUAGE
                     if type(s) == "number" and type(i) == "number" and not SKIP_SYSTEM[s] and not language then
-                        fn(s, i, TextOf(data.text))
+                        fn(s, i, TextOf(data.text), data)
                     end
                 end
             end
@@ -174,6 +176,29 @@ end
 
 local function Captureable(value)
     return value ~= nil and value ~= ""
+end
+
+-- A setting's value the way the game's Settings menu words it: Off and On for a tickbox, the
+-- game's own text for a choice where the game has one. Anything else is shown as it is stored.
+local optionData
+local function ValueText(system, settingId, value)
+    local text = tostring(value)
+    if not optionData then
+        optionData = {}
+        for _, p in ipairs(AS.PANELS) do
+            ForEachSetting(p.panel, function(s, i, _, data) optionData[s .. ":" .. i] = data end)
+        end
+    end
+    local data = optionData[system .. ":" .. settingId]
+    if not data then return text end
+    if data.controlType == OPTIONS_CHECKBOX then
+        if text == "1" or text == "true" then return "On" end
+        if text == "0" or text == "false" then return "Off" end
+    elseif type(data.valueStringPrefix) == "string" then
+        local stringId = _G[data.valueStringPrefix .. text]
+        if type(stringId) == "number" and GetString(stringId) ~= "" then return GetString(stringId) end
+    end
+    return text
 end
 
 ------------------------------------------------------------------------------
@@ -258,6 +283,41 @@ local function ReadChat()
 end
 
 ------------------------------------------------------------------------------
+-- Choosing the main account
+------------------------------------------------------------------------------
+local AskReload   -- the confirm pop-up, defined further down
+
+-- Makes the account you're on the main. When another account was the main, a pop-up asks first and
+-- that account's snapshot is dropped: it describes the old main, not this one.
+function AS.MakeMain()
+    local me = GetDisplayName()
+    if SV.main == me then return end
+    local old = SV.main
+    local function go()
+        SV.main = me
+        local dropped = false
+        if SV.snapshot and SV.snapshot.by ~= me then
+            SV.snapshot = nil
+            dropped = true
+        end
+        if dropped then
+            AS.Msg(me .. " is now the main account. The snapshot from " .. tostring(old) .. " is gone. Press Take snapshot in /fas to save this account's setup.")
+        else
+            AS.Msg(me .. " is now the main account. Press Take snapshot in /fas to save its setup.")
+        end
+        AS.RefreshWindow()
+    end
+    if not old then
+        go()
+        return
+    end
+    AskReload("Change the main account",
+        "The main account is " .. old .. ". Make " .. me .. " the main?\n\nYour other accounts will copy " .. me ..
+        " from now on. The snapshot taken on " .. old .. " is removed, so take a new one here afterwards.",
+        "Change the main", go)
+end
+
+------------------------------------------------------------------------------
 -- Snapshot (main account only)
 ------------------------------------------------------------------------------
 function AS.TakeSnapshot(quiet)
@@ -289,7 +349,8 @@ function AS.TakeSnapshot(quiet)
     end
     SV.snapshot = snap
     if not quiet then
-        AS.Msg(string.format("Snapshot taken: %d game settings, %d keybinds, chat look.", count, #binds))
+        AS.Msg(string.format("Snapshot taken: %d game settings, %d %s, chat look.", count, #binds,
+            #binds == 1 and "keybind" or "keybinds"))
         if AS.OtherSyncActive() then AS.Msg(OTHER_SYNC_MAIN_TEXT) end
     end
     AS.RefreshWindow()
@@ -432,7 +493,8 @@ local function PlanLines(plan, add)
         add(C_HEAD .. page .. "|r " .. C_MUTED .. "(" .. #byPage[page] .. ")|r")
         for _, e in ipairs(byPage[page]) do
             local name = (e.t ~= "" and e.t) or ("Setting " .. e.s .. "/" .. e.i)
-            add("  " .. C_TEXT .. name .. "|r  " .. C_MUTED .. tostring(e.old) .. " > |r" .. C_TEXT .. tostring(e.v) .. "|r")
+            add("  " .. C_TEXT .. name .. "|r  " .. C_MUTED .. ValueText(e.s, e.i, e.old) .. " > |r" ..
+                C_TEXT .. ValueText(e.s, e.i, e.v) .. "|r")
         end
     end
     if KeyCount(plan) > 0 then
@@ -519,8 +581,9 @@ local function KeyCalls(plan)
 end
 
 -- Nothing reloads the UI without asking (0.2.4, Albert): a pop-up says why, with a button
--- to reload and Cancel. yes picks the dialog with that button text.
-local RELOAD_DIALOGS = { ["Reload now"] = "FURYSACCOUNTSYNC_RELOAD", ["Undo and reload"] = "FURYSACCOUNTSYNC_UNDO" }
+-- to reload and Cancel. yes picks the dialog with that button text. Changing the main asks the same way.
+local RELOAD_DIALOGS = { ["Reload now"] = "FURYSACCOUNTSYNC_RELOAD", ["Undo and reload"] = "FURYSACCOUNTSYNC_UNDO",
+                         ["Change the main"] = "FURYSACCOUNTSYNC_MAIN", ["Undo this addon"] = "FURYSACCOUNTSYNC_UNDOONE" }
 for yes, name in pairs(RELOAD_DIALOGS) do
     ZO_Dialogs_RegisterCustomDialog(name, {
         title = { text = "<<1>>" },
@@ -532,7 +595,7 @@ for yes, name in pairs(RELOAD_DIALOGS) do
     })
 end
 
-local function AskReload(title, text, yes, onYes, onNo)
+AskReload = function(title, text, yes, onYes, onNo)
     ZO_Dialogs_ShowDialog(RELOAD_DIALOGS[yes], { onYes = onYes, onNo = onNo }, {
         titleParams = { title },
         mainTextParams = { text },
@@ -548,7 +611,7 @@ local function ReloadSoon(rec, auto)
     -- Set before asking, so the report also shows after a /reloadui you type later.
     rec.reloaded = auto and "auto" or "manual"
     AskReload("Fury's Account Sync",
-        "The main account's addon settings are copied. They load after a UI reload (a few seconds).\n\nReload now? With Cancel they load at your next /reloadui or login. Until then the addons keep their old settings, and changes you make to those addon settings now are not kept.",
+        "The main account's addon settings are copied. They load after a UI reload (a few seconds). Check your addons afterwards: a copy can break one, and \"Undo addon copies\" in the settings puts back what this account had.\n\nReload now? With Cancel they load at your next /reloadui or login. Until then the addons keep their old settings, and changes you make to those addon settings now are not kept.",
         "Reload now",
         function() ReloadUI("ingame") end,
         function() AS.Msg("The copied addon settings load at your next /reloadui or login.") end)
@@ -719,36 +782,256 @@ function AS.Undo()
     return true
 end
 
+-- Puts back one addon's settings from before the copy, unticks it and reloads, after a pop-up.
+function AS.UndoOne(typed)
+    if AS.busy then
+        AS.Msg("Still copying. Give it a moment.")
+        return false
+    end
+    local name = AS.FindUndoName(typed)
+    if not name then
+        local names = AS.UndoNames()
+        if #names == 0 then
+            AS.Msg("There is nothing to undo on this account.")
+        else
+            AS.Msg("\"" .. zo_strtrim(typed or "") .. "\" isn't one of the addons this account can undo. Those are: " .. table.concat(names, ", ") .. ".")
+        end
+        return false
+    end
+    if IsUnitInCombat("player") then
+        AS.Msg("Undo reloads the UI, so it waits until you're out of combat.")
+        return false
+    end
+    AskReload("Undo one addon",
+        "Put back the settings " .. name .. " had on this account before it copied the main's?\n\nIt is also unticked, so the next Apply leaves it alone. Every other addon stays copied. This reloads the UI (a few seconds).",
+        "Undo this addon",
+        function()
+            AS.UndoOneAddon(name)
+            local rec = AS.AccountRecord()
+            rec.report = nil
+            rec.reloaded = "undoone"
+            ReloadUI("ingame")
+        end)
+    return true
+end
+
+-- One line that says what this copy of the addon is set to and how the last copy went, to paste
+-- into a comment when something goes wrong. It holds no account or character names.
+function AS.ReportLine()
+    local rec = AS.AccountRecord()
+    local what = SV.what
+    local copies = {}
+    for _, p in ipairs(AS.PANELS) do
+        if what.panels[p.key] then copies[#copies + 1] = p.key end
+    end
+    if what.keybinds then copies[#copies + 1] = "keybinds" end
+    if what.chat then copies[#copies + 1] = "chat" end
+    if what.addons then copies[#copies + 1] = "addons" end
+    if what.layout then copies[#copies + 1] = "layout" end
+    local ticked = {}
+    for _, name in ipairs(AS.SortedCopiedNames()) do
+        if AS.IsPicked(name) and type(_G[name]) == "table" then ticked[#ticked + 1] = name end
+    end
+    local last = "none"
+    if rec.last then
+        last = AS.When(rec.last.time) .. ": " .. tostring(rec.last.summary) .. ", " .. tostring(rec.last.left or 0) .. " left, " ..
+            (rec.last.finished and "finished" or "stopped")
+    end
+    local role = (not SV.main and "no main yet") or (AS.IsMain() and "main") or ("other account, at login " .. tostring(rec.mode))
+    return table.concat({
+        "Fury's Account Sync " .. AS.version,
+        "game " .. tostring(GetAPIVersion()),
+        "this account: " .. role,
+        "snapshot: " .. (SV.snapshot and AS.When(SV.snapshot.time) or "none"),
+        "copies: " .. table.concat(copies, ","),
+        "addons ticked and running: " .. (#ticked > 0 and table.concat(ticked, ",") or "none"),
+        "can undo: " .. (#AS.UndoNames() > 0 and table.concat(AS.UndoNames(), ",") or "none"),
+        "not on the list: " .. (#AS.UnlistedAddons() > 0 and table.concat(AS.UnlistedAddons(), ",") or "none"),
+        "other sync addon active: " .. tostring(AS.OtherSyncActive()),
+        "last copy: " .. last,
+    }, " | ")
+end
+
 ------------------------------------------------------------------------------
 -- Preview text for the window
 ------------------------------------------------------------------------------
+-- How many accounts other than the main have copied a snapshot at least once.
+local function AccountsThatCopied()
+    local n = 0
+    for account, rec in pairs(SV.accounts) do
+        if account ~= SV.main and type(rec) == "table" and (rec.applied or 0) > 0 then n = n + 1 end
+    end
+    return n
+end
+
+-- The setup as numbered steps, each marked Done, Next or Later, for as long as it isn't finished.
+-- Returns nil once this account has nothing left to set up.
+local function StepsText()
+    local snap = SV.snapshot
+    local isMain = AS.IsMain()
+    local copiedHere = (AS.AccountRecord().applied or 0) > 0
+    local done1 = SV.main ~= nil
+    local done2 = done1 and snap ~= nil
+    local done3
+    if isMain then done3 = AccountsThatCopied() > 0 else done3 = copiedHere end
+    if done1 and done2 and done3 then return nil end
+
+    local nextShown = false
+    local function mark(done)
+        if done then return C_GOOD .. "Done|r   " end
+        if not nextShown then
+            nextShown = true
+            return C_WARN .. "Next|r   "
+        end
+        return C_MUTED .. "Later|r  "
+    end
+    local lines = { C_HEAD .. "Getting started|r", "" }
+    local function add(text) lines[#lines + 1] = text end
+
+    add(mark(done1) .. C_TEXT .. "1. Choose your main account|r")
+    if done1 then
+        add("            " .. C_SUB .. "The main is " .. SV.main .. ". Your other accounts will look like it.|r")
+    else
+        add("            " .. C_SUB .. "That is the account the others should look like. If you're on it now, press " ..
+            "\"Make this account the main\" above. If not, log in on it first and type /fas there.|r")
+    end
+    add("")
+    add(mark(done2) .. C_TEXT .. "2. Take a snapshot on the main|r")
+    if done2 then
+        add("            " .. C_SUB .. "Taken " .. AS.When(snap.time) .. " on " .. (snap.char or "?") .. ".|r")
+    elseif isMain then
+        add("            " .. C_SUB .. "Press \"Take snapshot\" above. It saves this account's game settings, keybinds and chat look.|r")
+    elseif done1 then
+        add("            " .. C_SUB .. "Log in on " .. SV.main .. ", type /fas and press \"Take snapshot\".|r")
+    else
+        add("            " .. C_SUB .. "It saves the main's game settings, keybinds and chat look.|r")
+    end
+    add("")
+    add(mark(done3) .. C_TEXT .. "3. Copy it on your other accounts|r")
+    if isMain then
+        add("            " .. C_SUB .. "Log in on another account and type /fas. It lists what would change before anything is copied.|r")
+    elseif done2 then
+        add("            " .. C_SUB .. "The list below is what would change on this character. Press \"Apply to this character\" to copy it.|r")
+    else
+        add("            " .. C_SUB .. "On each other account, /fas lists what would change. \"Apply to this character\" copies it.|r")
+    end
+    add("")
+    add(C_MUTED .. "Later on: \"At login\" on each other account can be set to Ask me or Automatic, so changes on the main " ..
+        "follow by themselves. Each character copies once, because the game keeps settings per character.|r")
+    return table.concat(lines, "\n")
+end
+AS.StepsText = StepsText
+
+-- On the main: every other account that has logged in with the addon, and where it stands.
+function AS.AccountLines(add)
+    local snap = SV.snapshot
+    local names = {}
+    for account in pairs(SV.accounts) do
+        if account ~= SV.main then names[#names + 1] = account end
+    end
+    if #names == 0 then return end
+    table.sort(names)
+    add(C_HEAD .. "Your other accounts|r " .. C_MUTED .. "(" .. #names .. ")|r")
+    for _, account in ipairs(names) do
+        local rec = SV.accounts[account]
+        local mode = (rec.mode == "auto" and "Automatic") or (rec.mode == "ask" and "Ask me") or "Off"
+        local current = 0
+        for _, copiedAt in pairs(rec.chars or {}) do
+            if copiedAt >= snap.time then current = current + 1 end
+        end
+        local state
+        if (rec.applied or 0) == 0 then
+            state = C_MUTED .. "has never copied|r"
+        elseif current > 0 then
+            state = C_GOOD .. string.format("%d %s this snapshot|r", current, current == 1 and "character has" or "characters have")
+        else
+            state = C_WARN .. "behind: last copied the snapshot of " .. AS.When(rec.applied) .. "|r"
+        end
+        add("  " .. C_TEXT .. account .. "|r  " .. state .. C_MUTED .. "  -  at login: " .. mode .. "|r")
+    end
+    add(C_MUTED .. "A character catches up the next time it logs in, if At login is Ask me or Automatic on its account.|r")
+    add("")
+end
+
+-- On the main: what differs between this character and the snapshot, so it is plain when the
+-- snapshot is out of date.
+local function MainChangeLines(add)
+    local plan = AS.Plan(true)
+    local keys = #plan.bind + #plan.unbind
+    local count = #plan.settings + keys + (plan.chat and 1 or 0)
+    if count == 0 then
+        add(C_GOOD .. "The snapshot is up to date with this character.|r")
+        return
+    end
+    add(C_WARN .. string.format("%d %s changed since the snapshot. Press Take snapshot so your other accounts get %s.|r",
+        count, count == 1 and "thing has" or "things have", count == 1 and "it" or "them"))
+    local shown = 0
+    for _, e in ipairs(plan.settings) do
+        if shown < 30 then
+            local name = (e.t ~= "" and e.t) or ("Setting " .. e.s .. "/" .. e.i)
+            add("  " .. C_TEXT .. e.page .. ": " .. name .. "|r  " .. C_MUTED .. ValueText(e.s, e.i, e.v) .. " > |r" ..
+                C_TEXT .. ValueText(e.s, e.i, e.old) .. "|r")
+        end
+        shown = shown + 1
+    end
+    for _, list in ipairs({ plan.bind, plan.unbind }) do
+        for _, e in ipairs(list) do
+            if shown < 30 then add("  " .. C_TEXT .. "Keybind: " .. KeyLabel(e) .. "|r") end
+            shown = shown + 1
+        end
+    end
+    if plan.chat then
+        if shown < 30 then add("  " .. C_TEXT .. "Chat colors, text size or fade|r") end
+        shown = shown + 1
+    end
+    if shown > 30 then add("  " .. C_MUTED .. "and " .. (shown - 30) .. " more|r") end
+    add(C_MUTED .. "The game keeps these per character, so another character of this account can differ from the " ..
+        "snapshot without anything having changed.|r")
+end
+
 function AS.PreviewText()
     local snap = SV.snapshot
-    if not SV.main then
-        return C_WARN .. "No main account yet.|r\n\n" .. C_SUB ..
-            "Log in on the account the others should copy, open the settings (gear button) and press " ..
-            "\"Make this account the main\". Then take a snapshot.|r"
-    end
-    if not snap then
-        return C_WARN .. "No snapshot yet.|r\n\n" .. C_SUB .. "Log in on " .. SV.main .. " and press Take snapshot.|r"
+    local steps = StepsText()
+    if not SV.main or not snap then
+        return steps
     end
     if AS.IsMain() then
         local n = 0
         for _, p in ipairs(AS.PANELS) do n = n + #(snap.settings[p.key] or {}) end
-        local warning = ""
-        if AS.OtherSyncActive() then warning = C_WARN .. OTHER_SYNC_MAIN_TEXT .. "|r\n\n" end
-        return warning .. C_HEAD .. "This is the main account.|r\n\n" .. C_TEXT ..
-            string.format("The snapshot holds %d game settings, %d keybinds and the chat look, taken %s on %s.",
-                n, SnapshotKeyCounts(snap), AS.When(snap.time), snap.char or "?") .. "|r\n\n" .. C_SUB ..
-            "Take a new snapshot after you change anything. Your other accounts pick it up the next time they log in, " ..
-            "if \"Copy the main's setup\" is turned on in their settings.|r\n\n" .. C_MUTED ..
-            "Addon settings and window layout aren't part of the snapshot. The other accounts read them from this " ..
-            "account's saved data, which the game writes when you log out or reload the UI here.|r"
+        local lines = {}
+        local function add(text) lines[#lines + 1] = text end
+        if AS.OtherSyncActive() then
+            add(C_WARN .. OTHER_SYNC_MAIN_TEXT .. "|r")
+            add("")
+        end
+        add(C_HEAD .. "This is the main account.|r")
+        add("")
+        add(C_TEXT .. string.format("The snapshot holds %d game settings, %d keybinds and the chat look, taken %s on %s.",
+            n, SnapshotKeyCounts(snap), AS.When(snap.time), snap.char or "?") .. "|r")
+        add("")
+        MainChangeLines(add)
+        add("")
+        AS.AccountLines(add)
+        add(C_SUB .. "Your other accounts pick up a new snapshot the next time they log in, if \"At login\" is set to " ..
+            "Ask me or Automatic there.|r")
+        add("")
+        add(C_MUTED .. "Addon settings and window layout aren't part of the snapshot. The other accounts read them from this " ..
+            "account's saved data, which the game writes when you log out or reload the UI here.|r")
+        if steps then
+            add("")
+            add(C_WARN .. "Next:|r " .. C_TEXT .. "log in on another account and type /fas. It lists what would change there " ..
+                "before anything is copied.|r")
+        end
+        return table.concat(lines, "\n")
     end
 
     local plan = AS.Plan()
     local lines = {}
     local function add(text) lines[#lines + 1] = text end
+    if steps then
+        add(steps)
+        add("")
+    end
     if AS.OtherSyncActive() then
         add(C_WARN .. OTHER_SYNC_TEXT .. "|r")
         add("")
@@ -756,7 +1039,8 @@ function AS.PreviewText()
     if AS.PlanCount(plan) == 0 then
         add(C_GOOD .. "This character already matches " .. snap.by .. ".|r")
     else
-        add(C_HEAD .. string.format("Pressing Apply changes %d things on this character:|r", AS.PlanCount(plan)))
+        local count = AS.PlanCount(plan)
+        add(C_HEAD .. string.format("Pressing Apply changes %d %s on this character:|r", count, count == 1 and "thing" or "things"))
     end
     add("")
     PlanLines(plan, add)
@@ -767,6 +1051,11 @@ function AS.PreviewText()
     add(C_MUTED .. "Snapshot from " .. snap.by .. " (" .. (snap.char or "?") .. "), taken " .. AS.When(snap.time) ..
         ". This character last copied: " .. AS.When(AS.CopiedHere()) .. ".|r")
     add(C_MUTED .. "The game keeps settings, keybinds and chat colors per character, so each character copies once.|r")
+    if #plan.addons > 0 then
+        add("|cFF6B86Warning: copying addon settings can break an addon.|r " .. C_WARN .. "Some addons keep things that belong " ..
+            "to one account or one character in with their settings. Check your addons after the reload. If one misbehaves, " ..
+            "\"Undo addon copies\" in the settings puts back what this account had.|r")
+    end
     if ReloadCount(plan) > 0 then
         add(C_WARN .. "Copying addon settings or window layout ends with a UI reload.|r " .. C_MUTED ..
             "What this account had before can be put back for a month with \"Undo addon copies\" in the settings.|r")
@@ -776,6 +1065,28 @@ function AS.PreviewText()
     else
         add(C_MUTED .. "Addon settings are copied for addons that are turned on for this account and on this addon's list. " ..
             "The Windows tool covers the rest with the game closed.|r")
+        local unticked = 0
+        for _, name in ipairs(AS.SortedCopiedNames()) do
+            if not AS.IsPicked(name) and type(_G[name]) == "table" then unticked = unticked + 1 end
+        end
+        if unticked > 0 then
+            add(C_MUTED .. string.format("%d more %s on the list and running here, but not ticked. Only a small, well-known set is ticked " ..
+                "to begin with. Tick more, one at a time, under \"Which addons\" in the settings.|r", unticked,
+                unticked == 1 and "addon is" or "addons are"))
+        end
+        local skipped = {}
+        for _, name in ipairs(AS.UnlistedAddons()) do
+            if not SV.extra[name] then skipped[#skipped + 1] = name end
+        end
+        if #skipped > 0 then
+            add("")
+            add(C_WARN .. string.format("Not copied: %d running %s on the list.|r", #skipped,
+                #skipped == 1 and "addon isn't" or "addons aren't"))
+            add("  " .. C_TEXT .. table.concat(skipped, ", ") .. "|r")
+            add(C_MUTED .. "These are saved-data names. This addon doesn't know which parts of them are settings and which are " ..
+                "data, so it leaves them alone. To copy one anyway, add its name under \"Addons that aren't on the list\" " ..
+                "in the settings, or use the Windows tool.|r")
+        end
     end
     return table.concat(lines, "\n")
 end
@@ -785,14 +1096,29 @@ end
 ------------------------------------------------------------------------------
 local function OnFirstActivation()
     local rec = AS.AccountRecord()
+    local firstTime = (rec.seen or 0) == 0
     rec.seen = GetTimeStamp()
     local snap = SV.snapshot
     if AS.IsMain() and AS.OtherSyncActive() then AS.Msg(OTHER_SYNC_MAIN_TEXT) end
 
+    -- One line, the first time an account logs in with this addon: how to open it.
+    if firstTime then
+        if not SV.main then
+            AS.Msg("New here? Type /fas to set it up in three steps. Everything starts turned off.")
+        elseif not AS.IsMain() and snap then
+            AS.Msg(SV.main .. " has a setup this account can copy. Type /fas to see what would change. Nothing is copied until you say so.")
+        elseif not AS.IsMain() then
+            AS.Msg("Type /fas to see the setup steps. Nothing is copied until you say so.")
+        end
+    end
+
     -- This login is the UI reload that followed a copy or an undo: say how it went.
     local reloaded = rec.reloaded
     rec.reloaded = nil
-    if reloaded == "undo" then
+    if reloaded == "undoone" then
+        AS.Msg("That addon has its own settings back and is unticked. Tick it again under \"Which addons\" in the settings if you want to try once more.")
+        return
+    elseif reloaded == "undo" then
         AS.Msg("This account's own addon settings and window layout are back. Untick \"Addon settings\" in " ..
             "the settings if they should stay that way.")
         return
@@ -831,8 +1157,13 @@ end
 -- Slash command
 ------------------------------------------------------------------------------
 local function Slash(arg)
-    arg = zo_strlower(zo_strtrim(arg or ""))
-    if arg == "snapshot" then
+    local typed = zo_strtrim(arg or "")
+    arg = zo_strlower(typed)
+    if arg:sub(1, 5) == "undo " then
+        AS.UndoOne(typed:sub(6))
+    elseif arg == "report" then
+        AS.ShowReportBox()
+    elseif arg == "snapshot" then
         AS.TakeSnapshot()
     elseif arg == "apply" then
         AS.Apply()
@@ -840,8 +1171,12 @@ local function Slash(arg)
         AS.Undo()
     elseif arg == "settings" then
         AS.OpenSettings()
-    else
+    elseif arg == "" then
         AS.ToggleWindow()
+    else
+        if arg ~= "help" then AS.Msg("\"/fas " .. arg .. "\" isn't a command.") end
+        AS.Msg("/fas opens the window. /fas snapshot takes a snapshot on the main. /fas apply copies the main's " ..
+            "snapshot to this character. /fas undo puts back this account's own addon settings, and /fas undo NAME just one addon's. /fas report makes a line to paste into a bug report. /fas settings opens the settings.")
     end
 end
 
@@ -860,6 +1195,21 @@ local function OnLoaded(_, addonName)
         SV.buildParts.skills = (SV.buildParts.front == true or SV.buildParts.back == true)
         SV.buildParts.front = nil
         SV.buildParts.back = nil
+    end
+    -- Before 0.5.0 every listed addon was copied. An install that already copies addon settings
+    -- keeps that: every listed addon starts ticked there. New installs start with the starter set.
+    if not SV.pickSet then
+        SV.pickSet = true
+        if SV.what.addons then
+            for name in pairs(AS.RULES) do
+                if AS.CopyRule(name) then SV.pick[name] = true end
+            end
+        end
+    end
+    -- HarvestMap joined the list in 0.5.1. An install that already copies addon settings gets it ticked.
+    if not SV.pickHarvest then
+        SV.pickHarvest = true
+        if SV.what.addons and SV.pick.Harvest_SavedVars == nil then SV.pick.Harvest_SavedVars = true end
     end
     AS.PruneUndo()
 

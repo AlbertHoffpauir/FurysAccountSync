@@ -14,10 +14,12 @@ Everything starts turned off. Nothing changes on any account until you turn it o
 Every account on the same PC shares this addon's saved file. Your main account takes a snapshot of its
 setup, and your other accounts copy it when they log in.
 
-1. Log in on your main account. Open Settings > Addons > Fury's Account Sync and press **Make this account the main**.
-2. Type `/fas` and press **Take snapshot** (or turn on **Take a snapshot automatically**).
-3. Log in on another account. In its settings, set **Copy the main's setup** to **Ask me when I log in** or **Automatically**.
-4. `/fas` shows exactly what will change. Press **Apply to this character**.
+1. Log in on your main account and type `/fas`. The window lists the three setup steps and marks the next one.
+2. Press **Make this account the main**, then **Take snapshot** (or turn on **Take a snapshot automatically** in the settings).
+3. Log in on another account and type `/fas`. It shows exactly what will change. Press **Apply to this character**.
+4. To have later changes follow by themselves, click **At login** on that account until it says **Ask me** or **Automatic**.
+
+On the main, the window says when something changed since the snapshot, so you know when to take a new one.
 
 The game keeps settings, keybinds and chat colors per character, so each character copies once. With
 **Automatically** that happens by itself the first time each character logs in after a new snapshot.
@@ -28,13 +30,23 @@ pressed its Save button it puts its saved settings and keybinds back after every
 erase a change before the snapshot is taken, and this addon warns you there. On an account that copies the
 main it undoes the copy, so this addon copies nothing there while it is active and says so.
 
+**Warning: copying addon settings can break an addon.** Some addons keep things that belong to one account or one
+character in with their settings. Copy with care, check your addons afterwards, and use **Undo addon copies**
+(in game) or **Restore a backup** (Windows tool) if one misbehaves. Game settings, keybinds and chat look are not affected by this.
+
 ## What it copies (in game)
 
 - The game's Settings pages: Gameplay, Camera, Interface, Nameplates, Social, Combat and Accessibility. Each page can be turned off.
 - Keybinds, including addon keybinds. An addon's keybind is copied once that addon is turned on for the account.
 - Chat colors, chat text size and how far the chat window fades.
-- **Addon settings** (starts turned off): the main's settings for every addon on this addon's list that is turned on for the account, such as options, colors and window positions. An addon's stats, logs and collected data stay as each account has them, and addons that only hold data (inventories, knowledge, guild history and the like) are never touched.
+- **Addon settings** (starts turned off): the main's settings for every ticked addon on this addon's list that is turned on for the account. Only a small set of well-known addons is ticked to begin with; **Which addons** in the settings has a tickbox for each, so you can add them one at a time. This covers things such as options, colors and window positions. An addon's stats, logs and collected data stay as each account has them, and addons that only hold data (inventories, knowledge, guild history and the like) are never touched.
 - **Chat window, meters and quest tracker** (starts turned off): where the base game's chat window, frame rate and ping meters and quest tracker sit, taken from the character the snapshot was made on.
+
+**HarvestMap** is copied too: which pins show, the filters, sizes and colors. It needs "account-wide settings" turned on in HarvestMap on the main. Its gathered pin locations are not touched.
+
+An addon that isn't on the list is left alone, and the list of changes names the running ones. Under **Addons that aren't on the list** in the settings you can add one by its saved-data name. Everything it keeps for the whole account is then copied, so only add addons that hold settings.
+
+On the main, the window lists your other accounts and whether they have the current snapshot.
 
 Graphics and sound aren't copied because every account on the same PC already shares them.
 
@@ -48,9 +60,10 @@ new snapshot.
 
 Turn on **Character builds** in the settings to get a builds section in `/fas`:
 
-- **Save build** saves this character's front and back skill bars, champion point stars and quickslot wheel under a name.
+- **Save build** saves this character's front and back skill bars, champion point stars, quickslot wheel and worn gear under a name.
 - **Load build** puts a saved build on the character you're on, out of combat. Every account on this PC can load it.
-- The tickboxes under it choose what gets loaded: skill bars, champion stars, quickslots.
+- The tickboxes under it choose what gets loaded: skill bars, champion stars, quickslots, gear. Gear starts turned off. It is put on from the character's bag, and a piece of the same item, trait and quality counts.
+- **Show as text** turns the chosen build into one line of text to copy with Ctrl+C. **Add from text** adds a build pasted into the same box, on this PC or another.
 - Anything that doesn't fit is skipped and listed: another class's skills, skills not unlocked yet, champion stars not unlocked, items not in the bag, mementos or mounts not owned. If the character has a different morph of a skill, its own morph is slotted.
 - Points spent in skills and champion trees are not changed.
 
@@ -69,6 +82,9 @@ can undo.
 - `/fas apply` apply the main's snapshot to this character
 - `/fas undo` put back the addon settings and window layout the account had before it copied the main's
 - `/fas settings` or `/fassettings` open the settings
+- `/fas undo NAME` put back one addon's own settings and untick it
+- `/fas report` one line to paste into a comment when something goes wrong
+- `/fas help` list the commands
 
 A keybind to open the window is under Controls > Keybindings > Fury's Account Sync.
 
