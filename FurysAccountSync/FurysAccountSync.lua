@@ -10,13 +10,12 @@
 FurysAccountSync = {
     name        = "FurysAccountSync",
     title       = "Fury's Account Sync",
-    version     = "0.5.3",
+    version     = "0.5.4",
     toolUrl     = "https://github.com/AlbertHoffpauir/FurysAccountSync",
     SCENE       = "FurysAccountSync_Scene",
 }
 local AS = FurysAccountSync
 
-local TAG = "|cA08CFF[Account Sync]|r "
 
 -- The game Settings pages this addon copies. Video and Audio are left out on purpose: they are kept
 -- in UserSettings.txt, which every account on the same PC already shares.
@@ -126,7 +125,7 @@ local OTHER_SYNC_TEXT = "Synced Account Settings is turned on for this account. 
 -- Small helpers
 ------------------------------------------------------------------------------
 function AS.Msg(text)
-    CHAT_ROUTER:AddSystemMessage(TAG .. text)
+    AS.Theme.Chat(text)   -- 0.5.4: the shared chat line (Theme.lua)
 end
 
 function AS.When(ts)
@@ -582,24 +581,9 @@ end
 
 -- Nothing reloads the UI without asking (0.2.4, Albert): a pop-up says why, with a button
 -- to reload and Cancel. yes picks the dialog with that button text. Changing the main asks the same way.
-local RELOAD_DIALOGS = { ["Reload now"] = "FURYSACCOUNTSYNC_RELOAD", ["Undo and reload"] = "FURYSACCOUNTSYNC_UNDO",
-                         ["Change the main"] = "FURYSACCOUNTSYNC_MAIN", ["Undo this addon"] = "FURYSACCOUNTSYNC_UNDOONE" }
-for yes, name in pairs(RELOAD_DIALOGS) do
-    ZO_Dialogs_RegisterCustomDialog(name, {
-        title = { text = "<<1>>" },
-        mainText = { text = "<<1>>" },
-        buttons = {
-            { text = yes, callback = function(dialog) dialog.data.onYes() end },
-            { text = SI_DIALOG_CANCEL, callback = function(dialog) if dialog.data.onNo then dialog.data.onNo() end end },
-        },
-    })
-end
-
+-- 0.5.4: the pop-up is the shared one (Theme.lua), the same in every Fury addon.
 AskReload = function(title, text, yes, onYes, onNo)
-    ZO_Dialogs_ShowDialog(RELOAD_DIALOGS[yes], { onYes = onYes, onNo = onNo }, {
-        titleParams = { title },
-        mainTextParams = { text },
-    })
+    AS.Theme.Confirm(title, text, yes, onYes, onNo)
 end
 
 -- Asks to reload the UI so the addons and the base game read what was just copied into their saved data.

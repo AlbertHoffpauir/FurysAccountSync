@@ -5,6 +5,7 @@
 [*][COLOR="#B4B0D8"]Settings page uses [B]LibAddonMenu-2.0[/B] by Seerah and sirinsidiator.[/COLOR]
 [*][COLOR="#B4B0D8"]Thanks to the authors of [B]Synced Account Settings[/B] and [B]Wizard's Wardrobe[/B], whose addons showed which game functions do the job.[/COLOR]
 [*][COLOR="#B4B0D8"]Game API details from the ESOUI wiki and ZeniMax's ESO UI source code.[/COLOR]
+[*][COLOR="#B4B0D8"]License: free to use and share for noncommercial purposes ([URL="https://polyformproject.org/licenses/noncommercial/1.0.0"]PolyForm Noncommercial 1.0.0[/URL]). Selling it, or any other commercial use, needs a separate license from me: send me a private message here on ESOUI.[/COLOR]
 [/LIST][/QUOTE]
 
 [CENTER][SIZE="6"][FONT="Georgia"][COLOR="#A08CFF"][B]Fury's Account Sync[/B][/COLOR][/FONT][/SIZE]
