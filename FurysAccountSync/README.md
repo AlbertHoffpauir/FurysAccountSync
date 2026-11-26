@@ -42,6 +42,8 @@ character in with their settings. Copy with care, check your addons afterwards, 
 - **Addon settings** (starts turned off): the main's settings for every ticked addon on this addon's list that is turned on for the account. Only a small set of well-known addons is ticked to begin with; **Which addons** in the settings has a tickbox for each, so you can add them one at a time. This covers things such as options, colors and window positions. An addon's stats, logs and collected data stay as each account has them, and addons that only hold data (inventories, knowledge, guild history and the like) are never touched.
 - **Chat window, meters and quest tracker** (starts turned off): where the base game's chat window, frame rate and ping meters and quest tracker sit, taken from the character the snapshot was made on.
 
+**Same keybinds on all your characters** (starts turned off): the game keeps keybinds per character, so a key you set on one character is missing on your others. On the main account, tick "Same keybinds on all this account's characters" in the settings and every other character there takes the main character's keybinds when you log in on it, game and addon keys alike. The main character is the one you last pressed Take snapshot on; automatic snapshots only come from it. `/fas keys` copies them right away.
+
 **HarvestMap** is copied too: which pins show, the filters, sizes and colors. It needs "account-wide settings" turned on in HarvestMap on the main. Its gathered pin locations are not touched.
 
 An addon that isn't on the list is left alone, and the list of changes names the running ones. Under **Addons that aren't on the list** in the settings you can add one by its saved-data name. Everything it keeps for the whole account is then copied, so only add addons that hold settings.
@@ -81,6 +83,7 @@ can undo.
 - `/fas start` the Start here page: how it works, in one page
 - `/fas snapshot` take a snapshot (main account)
 - `/fas apply` apply the main's snapshot to this character
+- `/fas keys` on the main account: give this character the main character's keybinds
 - `/fas undo` put back the addon settings and window layout the account had before it copied the main's
 - `/fas settings` or `/fassettings` open the settings
 - `/fas undo NAME` put back one addon's own settings and untick it
@@ -94,6 +97,7 @@ A keybind to open the window is under Controls > Keybindings > Fury's Account Sy
 - [Fury's Guild Management Toolset](https://www.esoui.com/downloads/info5063.html): an officer's toolkit: bank alerts, member and inactivity reports, trader week totals, raffles, event sign-ups and recruiting.
 - [Fury's Character Tracker](https://www.esoui.com/downloads/info5078.html): every character on one board: skill lines, crafting, research, daily writs, wallet and gear.
 - [Fury's Inventory Ledger](https://www.esoui.com/downloads/info5099.html): every item you own in one list, across all your characters, the bank and your houses, with export to Excel.
+- [Fury's Quality of Life](https://www.esoui.com/downloads/info5115.html): small comforts for everyday play: Select all when you deconstruct, a fishing bite alert with the right bait, a queue alert and a lock for everything you wear.
 
 All free on ESOUI and in Minion.
 

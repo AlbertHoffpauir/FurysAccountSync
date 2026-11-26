@@ -50,7 +50,7 @@ function AS.InitSettings()
                      (sv.snapshot and AS.When(sv.snapshot.time) or "none yet") .. "."
           end },
         { type = "button", name = "Make this account the main",
-          tooltip = "The account you're on becomes the one the others copy. You can change it later. If another account is the main now, a pop-up asks first, and that account's snapshot is removed so you take a new one here.",
+          tooltip = "The account you're on becomes the one the others copy. You can change it later. A pop-up asks first. If another account is the main now, that account's snapshot is removed so you take a new one here.",
           disabled = function() return AS.IsMain() end,
           func = function() AS.MakeMain() end },
         { type = "checkbox", name = "Take a snapshot automatically",
@@ -58,6 +58,25 @@ function AS.InitSettings()
           disabled = function() return not AS.IsMain() end,
           getFunc = function() return sv.autoSnapshot end,
           setFunc = function(v) sv.autoSnapshot = v end },
+        { type = "description",
+          text = function()
+              if not AS.IsMain() then return "" end
+              local name = AS.MainCharName()
+              if not name then return "Main character: none yet. Press Take snapshot in /fas on the character the others should copy." end
+              return "Main character: " .. name .. ". Automatic snapshots only come from this character. Pressing Take snapshot on another character makes that one the main character."
+          end },
+        { type = "checkbox", name = "Same keybinds on all this account's characters",
+          tooltip = "The game keeps keybinds per character, so a key you set on one character is missing on your others. With this on, every other character on the main account takes the main character's keybinds when you log in on it, game and addon keys alike. Set your keys on the main character: a key changed on another character goes back at its next login. Greyed out on every other account (they copy with Apply). Starts turned off.",
+          disabled = function() return not AS.IsMain() end,
+          getFunc = function() return sv.mainKeys end,
+          setFunc = function(v)
+              sv.mainKeys = v
+              if v and AS.IsMain() and not AS.IsMainChar() then AS.CopyKeysHere() end
+          end },
+        { type = "button", name = "Copy keybinds to this character",
+          tooltip = "Gives the character you're on the main character's keybinds right now (also /fas keys). Only keybinds change. Greyed out on the main character and on other accounts.",
+          disabled = function() return not AS.IsMain() or AS.IsMainChar() or not sv.snapshot end,
+          func = function() AS.CopyKeysHere() end },
 
         { type = "header", name = "This account" },
         { type = "description",

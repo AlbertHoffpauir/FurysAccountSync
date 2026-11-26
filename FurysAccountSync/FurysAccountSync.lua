@@ -10,7 +10,7 @@
 FurysAccountSync = {
     name        = "FurysAccountSync",
     title       = "Fury's Account Sync",
-    version     = "0.5.4",
+    version     = "0.5.8",
     toolUrl     = "https://github.com/AlbertHoffpauir/FurysAccountSync",
     SCENE       = "FurysAccountSync_Scene",
 }
@@ -66,6 +66,9 @@ local function Defaults()
                          social = true, combat = true, accessibility = true },
         },
         autoSnapshot = false,   -- main takes a fresh snapshot at every logout, reload and zone change
+        mainChar     = nil,     -- characterId of the main character: automatic snapshots only come from it
+        mainCharName = nil,
+        mainKeys     = false,   -- the main account's other characters take the main character's keybinds at login
         builds_on    = false,   -- Character builds section
         buildParts   = { skills = true, cp = true, quick = true, gear = false },   -- what Load build puts on the character
     }
@@ -87,6 +90,25 @@ function AS.SV() return SV end
 function AS.Account() return GetDisplayName() end
 
 function AS.IsMain() return SV.main ~= nil and SV.main == GetDisplayName() end
+
+-- 0.5.7: the main character is the one on the main account whose keybinds the others copy, and the
+-- only one an automatic snapshot comes from. Before 0.5.7 every character of the main snapshotted
+-- at logout, so a character without your addon keys could wipe them from the snapshot.
+-- Snapshots older than 0.5.7 only kept the character's name.
+function AS.IsMainChar()
+    if SV.mainChar then return SV.mainChar == GetCurrentCharacterId() end
+    if SV.snapshot and SV.snapshot.char then return SV.snapshot.char == GetUnitName("player") end
+    return true
+end
+
+function AS.MainCharName()
+    return SV.mainCharName or (SV.snapshot and SV.snapshot.char) or nil
+end
+
+local function SetMainChar()
+    SV.mainChar = GetCurrentCharacterId()
+    SV.mainCharName = GetUnitName("player")
+end
 
 function AS.AccountRecord(acct)
     acct = acct or GetDisplayName()
@@ -286,7 +308,7 @@ end
 ------------------------------------------------------------------------------
 local AskReload   -- the confirm pop-up, defined further down
 
--- Makes the account you're on the main. When another account was the main, a pop-up asks first and
+-- Makes the account you're on the main, after a pop-up. When another account was the main,
 -- that account's snapshot is dropped: it describes the old main, not this one.
 function AS.MakeMain()
     local me = GetDisplayName()
@@ -294,6 +316,7 @@ function AS.MakeMain()
     local old = SV.main
     local function go()
         SV.main = me
+        SetMainChar()
         local dropped = false
         if SV.snapshot and SV.snapshot.by ~= me then
             SV.snapshot = nil
@@ -307,7 +330,10 @@ function AS.MakeMain()
         AS.RefreshWindow()
     end
     if not old then
-        go()
+        -- 0.5.5: the first pick asks too (Albert: nothing that sticks happens on one click).
+        AskReload("Make this account the main",
+            "Make " .. me .. " the main account?\n\nYour other accounts on this PC will copy " .. me .. " from now on. You can change it later.",
+            "Make it the main", go)
         return
     end
     AskReload("Change the main account",
@@ -319,15 +345,20 @@ end
 ------------------------------------------------------------------------------
 -- Snapshot (main account only)
 ------------------------------------------------------------------------------
-function AS.TakeSnapshot(quiet)
+-- auto: the automatic snapshot at logout, reload or zone change. It only runs on the main character.
+-- A snapshot you take with the button makes the character you're on the main character.
+function AS.TakeSnapshot(quiet, auto)
     if not AS.IsMain() then
         if not quiet then AS.Msg("Only the main account takes snapshots. Make this account the main in the settings first.") end
         return false
     end
+    if auto and not AS.IsMainChar() then return false end
+    if not auto then SetMainChar() end
     local actions, binds = ReadKeybinds()
     local snap = {
         by       = GetDisplayName(),
         char     = GetUnitName("player"),
+        charId   = GetCurrentCharacterId(),
         time     = GetTimeStamp(),
         settings = {},
         actions  = actions,
@@ -364,11 +395,16 @@ end
 -- unbind: slots the main has empty. bind: slots that get the main's key. steal: slots outside the
 -- snapshot that hold a key the main uses for something else, cleared so the key can move.
 -- addons and layout: see AddonCopy.lua. gameOnly leaves those two out.
-function AS.Plan(gameOnly, skipAddons)
+-- keysOnly: just the keybinds (the main account's other characters, 0.5.7).
+function AS.Plan(gameOnly, skipAddons, keysOnly)
     local snap = SV.snapshot
     local plan = { settings = {}, unbind = {}, bind = {}, steal = {}, keysMissing = 0, chat = false, addons = {}, layout = {} }
     if not snap then return plan end
     local what = SV.what
+    if keysOnly then
+        gameOnly = true
+        what = { keybinds = true, chat = false, panels = {} }
+    end
     if not gameOnly then
         if what.addons and not skipAddons then plan.addons = AS.AddonPlan() end
         if what.layout then plan.layout = AS.LayoutPlan() end
@@ -734,6 +770,68 @@ function AS.Apply(auto)
             zo_ceil(#calls / KEY_BATCH * KEY_PAUSE_MS / 1000)))
     end
     SendKeybinds(calls, function(finished) FinishApply(snap, plan, finished, false, auto) end)
+    return true
+end
+
+-- The main account's other characters (0.5.7). The game keeps keybinds per character, so a key set on
+-- the main character is missing on the others. This gives the character you're on the main
+-- character's keybinds, game and addon keys alike. Only keybinds: nothing else is touched.
+-- auto: called at login. Quiet when nothing differs.
+function AS.CopyKeysHere(auto)
+    local snap = SV.snapshot
+    if not AS.IsMain() then
+        if not auto then AS.Msg("This works on the main account's characters. Other accounts copy with Apply.") end
+        return false
+    end
+    if not snap then
+        if not auto then AS.Msg("There is no snapshot yet. Log in on your main character and press Take snapshot.") end
+        return false
+    end
+    if AS.IsMainChar() then
+        if not auto then AS.Msg("This is the main character. The others copy its keybinds.") end
+        return false
+    end
+    if AS.busy then
+        if not auto then AS.Msg("Still copying. Give it a moment.") end
+        return false
+    end
+    local rec = AS.AccountRecord()
+    local plan = AS.Plan(true, true, true)
+    local keys = KeyCount(plan)
+    local from = AS.MainCharName() or "the main character"
+    if keys == 0 then
+        rec.chars[GetCurrentCharacterId()] = snap.time
+        if not auto then AS.Msg("This character already has the same keybinds as " .. from .. ".") end
+        return true
+    end
+    if IsUnitInCombat("player") then
+        AS.Msg("Keybinds can't be changed in combat. Type /fas keys once combat ends.")
+        return false
+    end
+    AS.busy = true
+    local function finish(finished, secondTry)
+        local after = AS.Plan(true, true, true)
+        if finished and not secondTry and KeyCount(after) > 0 then
+            SendKeybinds(KeyCalls(after), function(done) finish(done, true) end)
+            return
+        end
+        AS.busy = false
+        if not finished then
+            AS.Msg("Combat started, so the keybinds stopped part way. Type /fas keys after the fight.")
+            return
+        end
+        rec.chars[GetCurrentCharacterId()] = snap.time
+        AS.Msg(string.format("Copied %d %s from %s.", keys, keys == 1 and "keybind" or "keybinds", from))
+        local left = KeyCount(after)
+        if left > 0 then
+            AS.Msg(string.format("%d %s didn't take. Type /fas keys to try again.", left, left == 1 and "keybind" or "keybinds"))
+        end
+        if plan.keysMissing > 0 then
+            AS.Msg(string.format("%d keybinds belong to addons that aren't turned on here, so they were left out.", plan.keysMissing))
+        end
+        AS.RefreshWindow()
+    end
+    SendKeybinds(KeyCalls(plan), function(finished) finish(finished, false) end)
     return true
 end
 
@@ -1115,6 +1213,15 @@ local function OnFirstActivation()
         return
     end
 
+    -- Older installs knew the main character only by name: remember its id once it logs in.
+    if AS.IsMain() and not SV.mainChar and snap and snap.char == GetUnitName("player") then SetMainChar() end
+    -- The main account's other characters take the main character's keybinds (0.5.7, off by default).
+    if AS.IsMain() and SV.mainKeys and snap and not AS.IsMainChar() then
+        if AS.OtherSyncActive() then return end
+        AS.CopyKeysHere(true)
+        return
+    end
+
     if not snap or AS.IsMain() or not SV.main then return end
     if rec.mode == "off" then return end
     -- Game settings are per character; addon settings are per account.
@@ -1151,6 +1258,8 @@ local function Slash(arg)
         AS.TakeSnapshot()
     elseif arg == "apply" then
         AS.Apply()
+    elseif arg == "keys" then
+        AS.CopyKeysHere()
     elseif arg == "undo" then
         AS.Undo()
     elseif arg == "settings" then
@@ -1166,6 +1275,7 @@ local function Slash(arg)
         AS.Msg("/fas start  the Start here page: how it works, in one page")
         AS.Msg("/fas snapshot  take a snapshot on the main account")
         AS.Msg("/fas apply  copy the main's snapshot to this character")
+        AS.Msg("/fas keys  on the main account: give this character the main character's keybinds")
         AS.Msg("/fas undo  put back this account's own addon settings; /fas undo NAME just one addon's")
         AS.Msg("/fas report  make a line to paste into a bug report")
         AS.Msg("/fas settings  open the settings")
@@ -1213,7 +1323,7 @@ local function OnLoaded(_, addonName)
         zo_callLater(OnFirstActivation, 3000)
     end)
     EVENT_MANAGER:RegisterForEvent(AS.name, EVENT_PLAYER_DEACTIVATED, function()
-        if SV.autoSnapshot and AS.IsMain() then AS.TakeSnapshot(true) end
+        if SV.autoSnapshot and AS.IsMain() then AS.TakeSnapshot(true, true) end
     end)
 
     SLASH_COMMANDS["/fas"] = Slash

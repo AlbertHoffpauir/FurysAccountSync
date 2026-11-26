@@ -5,12 +5,11 @@
 [*][COLOR="#B4B0D8"]Settings page uses [B]LibAddonMenu-2.0[/B] by Seerah and sirinsidiator.[/COLOR]
 [*][COLOR="#B4B0D8"]Thanks to the authors of [B]Synced Account Settings[/B] and [B]Wizard's Wardrobe[/B], whose addons showed which game functions do the job.[/COLOR]
 [*][COLOR="#B4B0D8"]Game API details from the ESOUI wiki and ZeniMax's ESO UI source code.[/COLOR]
-[*][COLOR="#B4B0D8"]License: free to use and share for noncommercial purposes ([URL="https://polyformproject.org/licenses/noncommercial/1.0.0"]PolyForm Noncommercial 1.0.0[/URL]). Selling it, or any other commercial use, needs a separate license from me: send me a private message here on ESOUI.[/COLOR]
 [/LIST][/QUOTE]
 
 [CENTER][SIZE="6"][FONT="Georgia"][COLOR="#A08CFF"][B]Fury's Account Sync[/B][/COLOR][/FONT][/SIZE]
 [SIZE="3"][COLOR="#5CC2FF"][I]Set up one account. Every other account on your PC matches it.[/I][/COLOR][/SIZE][/CENTER]
-[CENTER][SIZE="1"][COLOR="#B4B0D8"]FURY'S ADDONS[/COLOR]   [URL="https://www.esoui.com/downloads/info5063.html"]Guild Management Toolset[/URL]   |   [URL="https://www.esoui.com/downloads/info5078.html"]Character Tracker[/URL]   |   [URL="https://www.esoui.com/downloads/info5099.html"]Inventory Ledger[/URL]   |   [COLOR="#A08CFF"][B]Account Sync[/B][/COLOR][/SIZE][/CENTER]
+[CENTER][SIZE="1"][COLOR="#B4B0D8"]FURY'S ADDONS[/COLOR]   [URL="https://www.esoui.com/downloads/info5063.html"]Guild Management Toolset[/URL]   |   [URL="https://www.esoui.com/downloads/info5078.html"]Character Tracker[/URL]   |   [URL="https://www.esoui.com/downloads/info5099.html"]Inventory Ledger[/URL]   |   [COLOR="#A08CFF"][B]Account Sync[/B][/COLOR]   |   [URL="https://www.esoui.com/downloads/info5115.html"]Quality of Life[/URL][/SIZE][/CENTER]
 
 [B]Play more than one account on the same PC?[/B] Set up your main account the way you like it, and your other accounts copy it: the game's settings pages, every keybind, the chat look, addon settings and window positions. Character builds are saved once and loaded onto any character on any account.
 [QUOTE][SIZE="3"][COLOR="#5CC2FF"][B]One setup for every account[/B][/COLOR][/SIZE]
@@ -77,6 +76,10 @@ Graphics and sound aren't copied because every account on the same PC already sh
 [SIZE="4"][FONT="Georgia"][COLOR="#5CC2FF"][B]Each character copies once[/B][/COLOR][/FONT][/SIZE]
 The game keeps settings, keybinds and chat colors per character, so every character on an account copies the snapshot once. With [B]At login: Automatic[/B] that happens by itself the first time each character logs in after a new snapshot. With [B]At login: Ask me[/B] the window opens with the list of changes and waits for you. After copying, the window lists what was copied and anything the game didn't accept. Addon settings belong to the account, so they are copied once per account for each new snapshot, not again for every character.
 
+[SIZE="4"][FONT="Georgia"][COLOR="#5CC2FF"][B]Same keybinds on all your characters[/B][/COLOR][/FONT][/SIZE]
+[COLOR="#B4B0D8"][I]Tick it in the settings on the main account. Starts turned off.[/I][/COLOR]
+The game keeps keybinds per character, so a key you set on one character is missing on your others, even on the same account. With [B]Same keybinds on all this account's characters[/B] ticked, every other character on the main account takes the main character's keybinds when you log in on it, game and addon keys alike. Only keybinds change. The main character is the one you last pressed [B]Take snapshot[/B] on, and automatic snapshots only come from it. Set your keys there: a key changed on another character goes back at its next login. [FONT="Courier New"][B]/fas keys[/B][/FONT] copies them right away.
+
 [SIZE="4"][FONT="Georgia"][COLOR="#5CC2FF"][B]Character builds[/B][/COLOR][/FONT][/SIZE]
 [COLOR="#B4B0D8"][I]Tick "Character builds" in the settings. Starts turned off.[/I][/COLOR]
 [LIST]
@@ -139,6 +142,7 @@ Addons read their settings when the UI loads. The reload only happens when addon
 [*][URL="https://www.esoui.com/downloads/info5063.html"][B]Fury's Guild Management Toolset[/B][/URL]: an officer's toolkit: bank alerts, member and inactivity reports, trader week totals, raffles, event sign-ups and recruiting.
 [*][URL="https://www.esoui.com/downloads/info5078.html"][B]Fury's Character Tracker[/B][/URL]: every character on one board: skill lines, crafting, research, daily writs, wallet and gear.
 [*][URL="https://www.esoui.com/downloads/info5099.html"][B]Fury's Inventory Ledger[/B][/URL]: every item you own in one list, across all your characters, the bank and your houses, with export to Excel.
+[*][URL="https://www.esoui.com/downloads/info5115.html"][B]Fury's Quality of Life[/B][/URL]: small comforts for everyday play: Select all when you deconstruct, a fishing bite alert with the right bait, a queue alert and a lock for everything you wear.
 [/LIST]
 All free here on ESOUI and in Minion.
 
@@ -146,4 +150,4 @@ All free here on ESOUI and in Minion.
 Bug reports and ideas are welcome in the comments.
 Source code: [URL="https://github.com/AlbertHoffpauir/FurysAccountSync"]GitHub[/URL]
 
-[CENTER][SIZE="1"][COLOR="#B4B0D8"]FURY'S ADDONS[/COLOR]   [URL="https://www.esoui.com/downloads/info5063.html"]Guild Management Toolset[/URL]   |   [URL="https://www.esoui.com/downloads/info5078.html"]Character Tracker[/URL]   |   [URL="https://www.esoui.com/downloads/info5099.html"]Inventory Ledger[/URL]   |   [COLOR="#A08CFF"][B]Account Sync[/B][/COLOR][/SIZE][/CENTER]
+[CENTER][SIZE="1"][COLOR="#B4B0D8"]FURY'S ADDONS[/COLOR]   [URL="https://www.esoui.com/downloads/info5063.html"]Guild Management Toolset[/URL]   |   [URL="https://www.esoui.com/downloads/info5078.html"]Character Tracker[/URL]   |   [URL="https://www.esoui.com/downloads/info5099.html"]Inventory Ledger[/URL]   |   [COLOR="#A08CFF"][B]Account Sync[/B][/COLOR]   |   [URL="https://www.esoui.com/downloads/info5115.html"]Quality of Life[/URL][/SIZE][/CENTER]

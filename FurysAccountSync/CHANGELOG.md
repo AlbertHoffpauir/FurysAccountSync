@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.5.8
+- **More from Fury** now lists Fury's Quality of Life, a new addon of small comforts: Select all on the deconstruct screens, a fishing bite alert with the right bait, a queue alert and a lock for everything you wear.
+
+## 0.5.7
+- **Same keybinds on all your characters.** The game keeps keybinds per character, so a key you set on one character is missing on your other characters, even on the same account. New tickbox on the main account: "Same keybinds on all this account's characters". With it on, every other character on the main account takes the main character's keybinds when you log in on it, game and addon keys alike. Only keybinds change. Starts turned off. `/fas keys` or the "Copy keybinds to this character" button does it right away.
+- **The main character.** The character you press Take snapshot on is the main character, shown in the settings. Automatic snapshots now only come from it. Before, every character on the main account took one at logout, so logging out on a character without your addon keys could take them out of the snapshot your other accounts copy.
+
+## 0.5.6
+- **The Fury addons menu.** Type `/fury`, or set the key "Open the Fury addons menu" (under this addon in Controls > Keybindings), for a small window that lists every Fury addon you have installed, each with an Open and a Settings button.
+
+## 0.5.5
+- **Make this account the main** always asks first now, also the first time you pick a main.
+
 ## 0.5.4
 - **One shared library file.** Chat lines, the welcome line and confirm pop-ups now come from the same file every Fury addon carries, next to the look, Start here and More from Fury, so all of them stay identical. Nothing changes in how the addon works, and it still needs no other addon.
 
