@@ -386,6 +386,8 @@ function AS.InitWindow()
     AS.Theme.StartButton(win, AS.ShowStart,
         "New here? One page on how it works: the main account, snapshots, copying to your other accounts, builds and undo.\n(also /fas start)")
     AS.Theme.CloseTip(win:GetNamedChild("Close"))
+    -- The other Fury addons, one click each, in the title bar (Theme.lua).
+    AS.Theme.TitleIcons(win, win:GetNamedChild("Settings"))
 
     local place = AS.SV().window
     if type(place) == "table" and type(place.x) == "number" and type(place.y) == "number" then

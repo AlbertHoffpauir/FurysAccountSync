@@ -10,7 +10,7 @@
 FurysAccountSync = {
     name        = "FurysAccountSync",
     title       = "Fury's Account Sync",
-    version     = "0.5.9",
+    version     = "0.6.4",
     toolUrl     = "https://github.com/AlbertHoffpauir/FurysAccountSync",
     SCENE       = "FurysAccountSync_Scene",
 }
