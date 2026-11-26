@@ -4,9 +4,6 @@
             <Action name="FURYSACCOUNTSYNC_TOGGLE">
                 <Down>FurysAccountSync.ToggleWindow()</Down>
             </Action>
-            <Action name="FURYSACCOUNTSYNC_FURY_MENU">
-                <Down>FurysAddonMenu.Toggle()</Down>
-            </Action>
         </Category>
     </Layer>
 </Bindings>
