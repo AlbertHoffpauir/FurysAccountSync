@@ -9,8 +9,9 @@
 
 [CENTER][SIZE="6"][FONT="Georgia"][COLOR="#A08CFF"][B]Fury's Account Sync[/B][/COLOR][/FONT][/SIZE]
 [SIZE="3"][COLOR="#5CC2FF"][I]Set up one account. Every other account on your PC matches it.[/I][/COLOR][/SIZE][/CENTER]
-[CENTER][SIZE="1"][COLOR="#B4B0D8"]FURY'S ADDONS[/COLOR]   [URL="https://www.esoui.com/downloads/info5063.html"]Guild Toolset[/URL]   |   [URL="https://www.esoui.com/downloads/info5078.html"]Character Tracker[/URL]   |   [URL="https://www.esoui.com/downloads/info5099.html"]Inventory Ledger[/URL]   |   [COLOR="#A08CFF"][B]Account Sync[/B][/COLOR]   |   [URL="https://www.esoui.com/downloads/info5115.html"]Quality of Life[/URL][/SIZE][/CENTER]
+[CENTER][SIZE="1"][COLOR="#B4B0D8"]FURY'S ADDONS[/COLOR]   [URL="https://www.esoui.com/downloads/info5063.html"]Guild Toolset[/URL]   |   [URL="https://www.esoui.com/downloads/info5078.html"]Character Tracker[/URL]   |   [URL="https://www.esoui.com/downloads/info5099.html"]Inventory Ledger[/URL]   |   [COLOR="#A08CFF"][B]Account Sync[/B][/COLOR]   |   [URL="https://www.esoui.com/downloads/info5115.html"]Quality of Life[/URL]   |   [URL="https://www.esoui.com/downloads/info5126-FurysAddonsMenu.html"]Addons Menu[/URL][/SIZE][/CENTER]
 
+[QUOTE][COLOR="#5CC2FF"][B]New:[/B][/COLOR] this addon now requires [URL="https://www.esoui.com/downloads/info5126-FurysAddonsMenu.html"]Fury's Addons Menu[/URL], a free library like LibAddonMenu-2.0. Minion 3 does not install libraries for you, so if the addon stops loading after this update, install it from the link or in Minion.[/QUOTE]
 [B]Play more than one account on the same PC?[/B] Set up your main account the way you like it, and your other accounts copy it: the game's settings pages, every keybind, the chat look, addon settings and window positions. Character builds are saved once and loaded onto any character on any account.
 [QUOTE][SIZE="3"][COLOR="#5CC2FF"][B]One setup for every account[/B][/COLOR][/SIZE]
 ESO keeps its settings, keybinds and chat colors [B]per character[/B], and every addon keeps its settings [B]per account[/B]. With several accounts that means setting everything up again and again. This addon reads it once on your main account and applies it wherever you log in, and it shows you every change before anything is touched.[/QUOTE]
@@ -22,8 +23,7 @@ ESO keeps its settings, keybinds and chat colors [B]per character[/B], and every
 [*][COLOR="#A08CFF"][B]Copy addon settings with care.[/B][/COLOR]  Copying addon settings can break an addon. It starts turned off, and only a small set of well-known addons is ticked to begin with. Tick more one at a time and check each in game.
 [*][COLOR="#A08CFF"][B]Stays on your PC.[/B][/COLOR]  Every account on one PC shares this addon's saved file. That is how they see each other, and nothing is sent anywhere.
 [/LIST]
-[B]Requires:[/B] [URL="https://www.esoui.com/downloads/info7-LibAddonMenu.html"]LibAddonMenu-2.0[/URL] (version 43 or newer). Install it separately, from the link or by searching for LibAddonMenu in Minion. Without it, this addon will not load.
-[B]Optional:[/B] [B]Fury's Addons Menu[/B] (version 1.3.0 or newer) adds the Fury sidebar: [FONT="Courier New"][B]/fury[/B][/FONT], a slim bar with one icon per Fury addon, and the other Fury addons' icons in this addon's title bar. Without it, this addon works the same, just without those.
+[B]Requires:[/B] [URL="https://www.esoui.com/downloads/info7-LibAddonMenu.html"]LibAddonMenu-2.0[/URL] (version 43 or newer) and [URL="https://www.esoui.com/downloads/info5126-FurysAddonsMenu.html"][B]Fury's Addons Menu[/B][/URL] (version 1.3.0 or newer), which gives all of Fury's addons the Fury sidebar and [FONT="Courier New"][B]/fury[/B][/FONT]. Both are separate downloads: get them from the links, or search for them in Minion (Minion 3 does not install libraries for you). Without them, this addon will not load.
 
 [SIZE="4"][FONT="Georgia"][COLOR="#5CC2FF"][B]At a glance[/B][/COLOR][/FONT][/SIZE]
 [QUOTE][LIST]
@@ -37,7 +37,7 @@ ESO keeps its settings, keybinds and chat colors [B]per character[/B], and every
 
 [SIZE="4"][FONT="Georgia"][COLOR="#5CC2FF"][B]Getting started[/B][/COLOR][/FONT][/SIZE]
 [LIST=1]
-[*]Install [B]LibAddonMenu-2.0[/B] (see Requires above) and turn this addon on for every account.
+[*]Install [B]LibAddonMenu-2.0[/B] and [B]Fury's Addons Menu[/B] (see Requires above) and turn all three on for every account.
 [*]Log in on your main account and type [FONT="Courier New"][B]/fas[/B][/FONT]. The window lists the three setup steps and marks the next one.
 [*]Press [B]Make this account the main[/B], then [B]Take snapshot[/B]. Or tick [B]Take a snapshot automatically[/B] in the settings and it stays up to date by itself.
 [*]Log in on another account and type [FONT="Courier New"][B]/fas[/B][/FONT]. It shows exactly what would change. Press [B]Apply to this character[/B].
@@ -151,4 +151,4 @@ All free here on ESOUI and in Minion.
 Bug reports and ideas are welcome in the comments.
 Source code: [URL="https://github.com/AlbertHoffpauir/FurysAccountSync"]GitHub[/URL]
 
-[CENTER][SIZE="1"][COLOR="#B4B0D8"]FURY'S ADDONS[/COLOR]   [URL="https://www.esoui.com/downloads/info5063.html"]Guild Toolset[/URL]   |   [URL="https://www.esoui.com/downloads/info5078.html"]Character Tracker[/URL]   |   [URL="https://www.esoui.com/downloads/info5099.html"]Inventory Ledger[/URL]   |   [COLOR="#A08CFF"][B]Account Sync[/B][/COLOR]   |   [URL="https://www.esoui.com/downloads/info5115.html"]Quality of Life[/URL][/SIZE][/CENTER]
+[CENTER][SIZE="1"][COLOR="#B4B0D8"]FURY'S ADDONS[/COLOR]   [URL="https://www.esoui.com/downloads/info5063.html"]Guild Toolset[/URL]   |   [URL="https://www.esoui.com/downloads/info5078.html"]Character Tracker[/URL]   |   [URL="https://www.esoui.com/downloads/info5099.html"]Inventory Ledger[/URL]   |   [COLOR="#A08CFF"][B]Account Sync[/B][/COLOR]   |   [URL="https://www.esoui.com/downloads/info5115.html"]Quality of Life[/URL]   |   [URL="https://www.esoui.com/downloads/info5126-FurysAddonsMenu.html"]Addons Menu[/URL][/SIZE][/CENTER]
