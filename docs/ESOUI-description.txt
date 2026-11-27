@@ -23,6 +23,7 @@ ESO keeps its settings, keybinds and chat colors [B]per character[/B], and every
 [*][COLOR="#A08CFF"][B]Stays on your PC.[/B][/COLOR]  Every account on one PC shares this addon's saved file. That is how they see each other, and nothing is sent anywhere.
 [/LIST]
 [B]Requires:[/B] [URL="https://www.esoui.com/downloads/info7-LibAddonMenu.html"]LibAddonMenu-2.0[/URL] (version 43 or newer). Install it separately, from the link or by searching for LibAddonMenu in Minion. Without it, this addon will not load.
+[B]Optional:[/B] [B]Fury's Addons Menu[/B] (version 1.2.0 or newer) adds a key for the Fury sidebar and remembers the sidebar's settings. Without it, [FONT="Courier New"][B]/fury[/B][/FONT] and the sidebar still work.
 
 [SIZE="4"][FONT="Georgia"][COLOR="#5CC2FF"][B]At a glance[/B][/COLOR][/FONT][/SIZE]
 [QUOTE][LIST]
