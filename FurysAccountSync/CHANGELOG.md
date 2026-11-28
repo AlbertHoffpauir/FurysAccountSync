@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.6.9
+- **Saved settings now load the standard way** (ZO_SavedVars), as ESOUI's reviewers asked. Your settings are moved over by themselves the first time you log in, so nothing changes for you. The Windows tool (0.2.2) reads them in the new place.
+- **Game settings now stick after you log out.** The game holds many settings, Auto Loot among them, until its own Settings menu closes and only then saves them to its server. Settings this addon copied looked right but could be gone at the next login unless you had opened and closed the Settings menu. They are now saved right away. If an account copied before, press Apply there once more.
+- **HUD positions are copied too.** Where you moved the HUD windows with the game's own HUD editor (the action bar, health bars, buffs, group frames and the like) now copies with "Chat window, meters, quest tracker and HUD". The game keeps these once per account. The Windows tool (0.2.2) copies them as well.
+
 ## 0.6.8
 - **Fury's Addons Menu is now a required library**, like LibAddonMenu-2.0, so it shows in the game's Required Add-Ons list. Install it from ESOUI or Minion (Minion 3 does not install libraries for you). It gives all of Fury's addons the Fury sidebar and `/fury`.
 

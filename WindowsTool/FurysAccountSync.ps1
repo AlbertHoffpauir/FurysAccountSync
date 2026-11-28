@@ -15,7 +15,7 @@
 param([string]$Live, [string]$SelfTest, [switch]$KeepConsole, [switch]$Launch, [switch]$Detached)
 
 $ErrorActionPreference = 'Stop'
-$toolVersion = '0.2.1'
+$toolVersion = '0.2.2'
 
 # Anything that goes wrong while the window is being built is shown instead of the window just closing.
 # Started by the .cmd file: start this script again in a process of its own with no console window,
@@ -123,18 +123,18 @@ $btnNoAlts  = New-Button 'Tick none' 154 352 126 'Unticks every account in the l
 $form.Controls.Add($btnAllAlts); $form.Controls.Add($btnNoAlts)
 
 # base game
-$form.Controls.Add((New-Label 'Base game (per character):' 20 400 260 24 $col.Blue $fontBold))
+$form.Controls.Add((New-Label 'Base game:' 20 400 260 24 $col.Blue $fontBold))
 $baseCheck = New-Object System.Windows.Forms.CheckBox
-$baseCheck.Text = 'Chat window, meters, quest tracker'; $baseCheck.Left = 20; $baseCheck.Top = 426; $baseCheck.Width = 260
+$baseCheck.Text = 'Chat, meters, quest tracker, HUD'; $baseCheck.Left = 20; $baseCheck.Top = 426; $baseCheck.Width = 260
 $baseCheck.ForeColor = $col.Text
-$tip.SetToolTip($baseCheck, "Copies the place and size of the chat window, and the place of the quest tracker and the frame rate and ping meters, from one of your main's characters to every character on the ticked accounts.")
+$tip.SetToolTip($baseCheck, "Copies the place and size of the chat window, and the place of the quest tracker and the frame rate and ping meters, from one of your main's characters to every character on the ticked accounts. Also copies where the HUD windows sit that the main moved in the game's own HUD editor (kept once per account).")
 $form.Controls.Add($baseCheck)
 $form.Controls.Add((New-Label 'from this character:' 38 454 240 22 $col.Sub))
 $charBox = New-Object System.Windows.Forms.ComboBox
 $charBox.Left = 38; $charBox.Top = 478; $charBox.Width = 242
 $charBox.DropDownStyle = [System.Windows.Forms.ComboBoxStyle]::DropDownList
 $charBox.BackColor = $col.Void; $charBox.ForeColor = $col.Text; $charBox.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat
-$tip.SetToolTip($charBox, "The main's character whose chat window, meters and quest tracker positions the others get.")
+$tip.SetToolTip($charBox, "The main's character whose chat window, meters and quest tracker positions the others get. HUD positions come from the main account whichever character you pick.")
 $form.Controls.Add($charBox)
 
 $note = New-Label ("Game settings, keybinds and chat colors are copied in game by the Fury's Account Sync addon. " +
@@ -410,7 +410,7 @@ function Do-Preview([switch]$Quiet) {
     $baseFrom = $null
     if ($baseCheck.Checked -and $charBox.SelectedItem) { $baseFrom = [string]$charBox.SelectedItem }
     $files = @(Get-TickedFiles)
-    if ($files.Count -eq 0 -and -not $baseFrom) { Show-Info 'Tick at least one addon, or the chat window, meters and quest tracker box.'; return }
+    if ($files.Count -eq 0 -and -not $baseFrom) { Show-Info 'Tick at least one addon, or the chat, meters, quest tracker and HUD box.'; return }
 
     $form.Cursor = $cursorWait
     # Read the folder again so the preview matches the files as they are right now.

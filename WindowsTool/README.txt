@@ -16,14 +16,15 @@ What it does
 Makes your other ESO accounts on this PC match your main one:
   - every addon's settings and window positions (Bandits, Perfect Pixel, pChat, Combat Alerts and so on)
   - optionally, the base game's chat window place and size, and the quest tracker and meter positions,
-    copied from one of your main's characters to every character on the other accounts
+    copied from one of your main's characters to every character on the other accounts, plus where
+    the HUD windows sit that you moved with the game's own HUD editor (kept once per account)
 
 Game settings, keybinds and chat colors are copied in game by the Fury's Account Sync addon. The addon can
 also copy addon settings in game, for addons that are turned on for the account. This tool covers every
 addon in the folder, turned on or not, and makes a full backup first.
 Graphics and sound are already the same for every account on one PC.
 
-Version 0.2.1
+Version 0.2.2
 
 Where to put it
 ---------------
@@ -79,6 +80,12 @@ To keep the black window showing all the time, run
 
 Changes
 -------
+0.2.2  The base game box also copies HUD positions: where you moved the HUD windows with the game's own
+       HUD editor (action bar, health bars, buffs, group frames and the like). The game keeps them once
+       per account. The box is now called "Chat, meters, quest tracker, HUD".
+       Auto Loot and the other game settings are not in any file (the game keeps them on its server), so
+       the in-game addon copies them. Addon 0.6.9 makes sure they are saved.
+       It also finds the main account in addon 0.6.9 and later, which keep their settings the standard way.
 0.2.1  HarvestMap's settings are copied (which pins show, filters, sizes and colors). It keeps them in
        its own layout, so before this it was listed as data. It needs "account-wide settings" turned
        on in HarvestMap on the main. The gathered pin locations are not touched.

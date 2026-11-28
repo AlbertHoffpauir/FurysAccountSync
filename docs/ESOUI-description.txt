@@ -31,7 +31,7 @@ ESO keeps its settings, keybinds and chat colors [B]per character[/B], and every
 [*][COLOR="#A08CFF"][B]Keybinds:[/B][/COLOR]  Every key you can rebind, addon keybinds included. A key that is in the way is cleared first.
 [*][COLOR="#A08CFF"][B]Chat look:[/B][/COLOR]  The color of every chat channel, the text size and how far the window fades.
 [*][COLOR="#A08CFF"][B]Addon settings:[/B][/COLOR]  Options, colors and window positions of about 75 addons, each with its own tickbox. Their stats, logs and collected data stay.
-[*][COLOR="#A08CFF"][B]Window layout:[/B][/COLOR]  Where the base game's chat window, meters and quest tracker sit.
+[*][COLOR="#A08CFF"][B]Window layout:[/B][/COLOR]  Where the base game's chat window, meters and quest tracker sit, and where you moved the HUD windows with the game's own HUD editor.
 [*][COLOR="#A08CFF"][B]Character builds:[/B][/COLOR]  Skill bars, champion stars, quickslots and gear, saved by name. You tick which parts to load, and a build can be shared as text.
 [/LIST][/QUOTE]
 
@@ -51,7 +51,7 @@ ESO keeps its settings, keybinds and chat colors [B]per character[/B], and every
 [*][B]Keybinds:[/B] every key you can rebind, including addon keybinds. They are sent a few at a time, a key held by something else is cleared first, and anything that didn't land is tried once more and then reported. An addon's keybind is copied once that addon is turned on for the account.
 [*][B]Chat look:[/B] the color of every chat channel, the chat text size and how far the chat window fades.
 [*][B]Addon settings[/B] (starts turned off): the main's settings for every ticked addon on the list that is turned on for the account. See the next section.
-[*][B]Chat window, meters and quest tracker[/B] (starts turned off): where they sit, taken from the character the snapshot was made on.
+[*][B]Chat window, meters, quest tracker and HUD[/B] (starts turned off): where they sit, taken from the character the snapshot was made on, and where you moved the HUD windows (action bar, health bars, buffs, group frames and the like) with the game's own HUD editor.
 [/LIST]
 Graphics and sound aren't copied because every account on the same PC already shares them.
 
@@ -100,7 +100,7 @@ Turn it off, or untick its Sync option. On any account where you pressed its Sav
 [COLOR="#B4B0D8"][I]Optional, separate download. The addon works in game without it.[/I][/COLOR]
 A small Windows tool copies addon settings with the game closed. Use it for addons that aren't turned on for an account, for addons that aren't on the list (you tick them yourself), and when you want a full backup first.
 [LIST=1]
-[*]Download the [B][URL="https://github.com/AlbertHoffpauir/FurysAccountSync/raw/main/downloads/FurysAccountSync-WindowsTool-0.2.1.zip"]Windows tool zip[/URL][/B] and unzip it anywhere. It is a separate download because ESOUI addon zips may only hold addon files.
+[*]Download the [B][URL="https://github.com/AlbertHoffpauir/FurysAccountSync/raw/main/downloads/FurysAccountSync-WindowsTool-0.2.2.zip"]Windows tool zip[/URL][/B] and unzip it anywhere. It is a separate download because ESOUI addon zips may only hold addon files.
 [*]Close the game and double-click [B]Fury's Account Sync.cmd[/B]. Pick the main account, tick the accounts to copy to, and press [B]Preview[/B].
 [*][B]Apply[/B] backs up the whole SavedVariables folder first, writes the changes, reads every file back and checks it. [B]Restore a backup[/B] undoes it, and [B]Restore the selected addon from a backup[/B] puts back one addon's file and leaves the rest.
 [*]On first start only the same small set of well-known addons is ticked. The ten newest backups are kept, and so is the very first one, from before the tool changed anything.

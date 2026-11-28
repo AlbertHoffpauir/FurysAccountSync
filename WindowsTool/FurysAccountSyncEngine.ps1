@@ -431,6 +431,8 @@ $script:Rules = @{
 
 # Per-character parts of the base game's saved file that make up the chat and window layout.
 $script:BaseGameCharacterParts = @('"Chat"', '"PerformanceMeters"', '"ZO_HUDTracker_Manager"')
+# Account-wide parts of the same file: where the HUD windows sit after the game's own HUD editor moved them.
+$script:BaseGameAccountParts = @('"ZO_HUDManager"')
 
 function Get-Rule([string]$varName) {
     if ($script:Rules.ContainsKey($varName)) { return $script:Rules[$varName] }
@@ -627,9 +629,25 @@ function New-FasPlan($inventory, $options) {
                 $mainAcct = $profile.Get($mainKey)
                 $fromChar = if ($mainAcct) { $mainAcct.Get((Q $options.BaseGameFrom)) } else { $null }
                 if (-not $fromChar) { continue }
+                $mainWide = $mainAcct.Get('"$AccountWide"')
                 foreach ($alt in $options.Alts) {
                     $altAcct = $profile.Get((Q $alt))
                     if (-not $altAcct) { continue }
+                    if ($mainWide -and $mainWide.IsTable) {
+                        $altWide = $altAcct.Get('"$AccountWide"')
+                        if (-not $altWide -or -not $altWide.IsTable) {
+                            $altWide = [FuryAS.Node]::NewTable()
+                            $altAcct.Set('"$AccountWide"', $altWide)
+                        }
+                        foreach ($part in $script:BaseGameAccountParts) {
+                            $src = $mainWide.Get($part)
+                            if (-not $src) { continue }
+                            if (-not [FuryAS.Sv]::Same($src, $altWide.Get($part))) {
+                                $altWide.Set($part, $src.Clone())
+                                $changes.Add("${alt}: HUD positions")
+                            }
+                        }
+                    }
                     for ($c = 0; $c -lt $altAcct.Keys.Count; $c++) {
                         $charKey = $altAcct.Keys[$c]
                         if ($charKey -eq '"$AccountWide"') { continue }
@@ -859,6 +877,11 @@ function Get-FasMainFromAddon($inventory) {
     if (-not $f) { return $null }
     $root = $f.Sv.File.Get('FurysAccountSync_SV')
     if (-not $root) { return $null }
+    # Addon 0.6.9 and later keep their settings the standard way, under Default > $AllAccounts > $AccountWide.
+    $wide = $root.Get('"Default"')
+    if ($wide) { $wide = $wide.Get('"$AllAccounts"') }
+    if ($wide) { $wide = $wide.Get('"$AccountWide"') }
+    if ($wide) { $root = $wide }
     $main = $root.Get('"main"')
     if ($main -and -not $main.IsTable) { return UnQ $main.Raw }
     return $null
