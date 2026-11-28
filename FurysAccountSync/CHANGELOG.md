@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.7.0
+- **Fury's Addons Menu is now optional.** This addon no longer needs it to load. With it installed you still get the Fury sidebar, `/fury` and the title-bar icons; without it everything else works the same. Fury's Addons Menu is being replaced by Fury's Command Center soon.
+
 ## 0.6.9
 - **Saved settings now load the standard way** (ZO_SavedVars), as ESOUI's reviewers asked. Your settings are moved over by themselves the first time you log in, so nothing changes for you. The Windows tool (0.2.2) reads them in the new place.
 - **Game settings now stick after you log out.** The game holds many settings, Auto Loot among them, until its own Settings menu closes and only then saves them to its server. Settings this addon copied looked right but could be gone at the next login unless you had opened and closed the Settings menu. They are now saved right away. If an account copied before, press Apply there once more.

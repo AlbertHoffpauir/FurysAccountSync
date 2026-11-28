@@ -2,13 +2,13 @@
 
 **AI disclosure:** This addon's code was written with the assistance of an AI coding assistant (Claude by Anthropic), working from my designs and instructions. I test every release in game on my own accounts before it goes up, and I maintain it. Please report any problem in the comments on ESOUI or in the issues here.
 
-> **New:** this addon now requires [Fury's Addons Menu](https://www.esoui.com/downloads/info5126-FurysAddonsMenu.html), a free library like LibAddonMenu-2.0. Minion 3 does not install libraries for you, so if the addon stops loading after this update, install it from the link or in Minion.
+> **Update:** [Fury's Addons Menu](https://www.esoui.com/downloads/info5126-FurysAddonsMenu.html) is optional again. This addon works without it; with it you still get the Fury sidebar and `/fury`. It is being replaced by Fury's Command Center soon.
 
 An Elder Scrolls Online addon for people who play more than one account on the same PC. Set up your main account the way you like it, and your other accounts copy it: game settings, keybinds, chat look, addon settings and window positions, plus character builds you can load onto any character on any account. Everything starts turned off, and nothing changes on an account until you turn it on there.
 
 ## Downloads
 
-- **The addon:** get it from [ESOUI](https://www.esoui.com/downloads/info5106-FurysAccountSync.html) or Minion. The same files are in [`FurysAccountSync/`](FurysAccountSync/) here, and as [FurysAccountSync-0.6.9.zip](https://github.com/AlbertHoffpauir/FurysAccountSync/raw/main/downloads/FurysAccountSync-0.6.9.zip). It needs LibAddonMenu-2.0 and [Fury's Addons Menu](https://www.esoui.com/downloads/info5126-FurysAddonsMenu.html) (the Fury sidebar and `/fury`). Both are free on ESOUI and in Minion.
+- **The addon:** get it from [ESOUI](https://www.esoui.com/downloads/info5106-FurysAccountSync.html) or Minion. The same files are in [`FurysAccountSync/`](FurysAccountSync/) here, and as [FurysAccountSync-0.7.0.zip](https://github.com/AlbertHoffpauir/FurysAccountSync/raw/main/downloads/FurysAccountSync-0.7.0.zip). It needs LibAddonMenu-2.0, free on ESOUI and in Minion. [Fury's Addons Menu](https://www.esoui.com/downloads/info5126-FurysAddonsMenu.html) (the Fury sidebar and `/fury`) is optional.
 - **Windows tool** (optional): copies addon settings and the base game's window positions with the game closed, for every addon in the folder, with a full backup first. Copying addon settings can break an addon, so only a small set of well-known addons is ticked to begin with. **[Download FurysAccountSync-WindowsTool-0.2.2.zip](https://github.com/AlbertHoffpauir/FurysAccountSync/raw/main/downloads/FurysAccountSync-WindowsTool-0.2.2.zip)**, unzip it anywhere and double-click `Fury's Account Sync.cmd`.
 
 The tool is made of plain-text scripts (batch and PowerShell) you can open in Notepad. It only reads and writes the addon saved data files in `Documents\Elder Scrolls Online\live\SavedVariables`, keeps its backups and choices next to that folder, and never connects to the internet. It is a separate download because ESOUI addon zips may only hold addon files.

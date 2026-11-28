@@ -1,11 +1,12 @@
-## Title: |cA08CFFFury's Account Sync|r |c8A86B0v0.6.9|r
+## Title: |cA08CFFFury's Account Sync|r |c8A86B0v0.7.0|r
 ## Description: Make your other accounts on this PC match your main one: game settings, keybinds, chat look, addon settings and window layout, plus character builds you can load onto any character.
 ## Author: Furyous
-## Version: 0.6.9
-## AddOnVersion: 69
+## Version: 0.7.0
+## AddOnVersion: 70
 ## APIVersion: 101051 101052
 ## SavedVariables: FurysAccountSync_SV
-## DependsOn: LibAddonMenu-2.0>=43 FurysAddonMenu>=130
+## DependsOn: LibAddonMenu-2.0>=43
+## OptionalDependsOn: FurysAddonMenu
 
 FurysAccountSync.lua
 Rules.lua
